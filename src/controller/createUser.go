@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
+	"github.com/rbaccaglini/simple_crud_golang/src/configuration/validation"
 	request "github.com/rbaccaglini/simple_crud_golang/src/controller/model/request"
 	response "github.com/rbaccaglini/simple_crud_golang/src/controller/model/response"
 )
@@ -14,7 +15,8 @@ func CreateUser(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&UserRequest); err != nil {
 		restErr := rest_err.NewBadRequestError(fmt.Sprintf("There are some incorrect fields, error=%s", err.Error()))
-		c.JSON(restErr.Code, restErr)
+		errRest := validation.ValidateUserError(err)
+		c.JSON(restErr.Code, errRest)
 		return
 	}
 
