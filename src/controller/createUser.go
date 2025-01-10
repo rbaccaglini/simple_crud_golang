@@ -10,6 +10,7 @@ import (
 	request "github.com/rbaccaglini/simple_crud_golang/src/controller/model/request"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
 	"github.com/rbaccaglini/simple_crud_golang/src/model"
+	"github.com/rbaccaglini/simple_crud_golang/src/model/service"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +40,9 @@ func CreateUser(c *gin.Context) {
 		UserRequest.Age,
 	)
 
-	if err := domain.CreateUser(); err != nil {
+	service := service.NewUserDomainService()
+
+	if err := service.CreateUser(domain); err != nil {
 		logger.Error("Error creating user", err, JOURNEY)
 		c.JSON(err.Code, err)
 		return
