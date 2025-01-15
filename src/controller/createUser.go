@@ -10,7 +10,7 @@ import (
 	request "github.com/rbaccaglini/simple_crud_golang/src/controller/model/request"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
 	"github.com/rbaccaglini/simple_crud_golang/src/model"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/service"
+	"github.com/rbaccaglini/simple_crud_golang/src/view"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +19,7 @@ var (
 	UserDomainInterface model.UserDomainInterface
 )
 
-func CreateUser(c *gin.Context) {
+func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 
 	logger.Info("CreateUser function called", JOURNEY)
 
@@ -40,16 +40,14 @@ func CreateUser(c *gin.Context) {
 		UserRequest.Age,
 	)
 
-	service := service.NewUserDomainService()
-
-	if err := service.CreateUser(domain); err != nil {
+	if err := uc.service.CreateUser(domain); err != nil {
 		logger.Error("Error creating user", err, JOURNEY)
 		c.JSON(err.Code, err)
 		return
 	}
 
-	logger.Info("User created successfully", JOURNEY)
+	logger.Info(fmt.Sprintf("User created successfully: %s", domain.GetName()), JOURNEY)
 
-	c.String(http.StatusCreated, "")
+	c.JSON(http.StatusCreated, view.ConvertDomainToResponse(domain))
 
 }
