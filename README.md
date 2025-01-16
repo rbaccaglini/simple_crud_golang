@@ -14,6 +14,12 @@ go mod init github.com/rbaccaglini/simple_crud_golang
 - go get -u go.uber.org/zap
 - go get go.mongodb.org/mongo-driver/mongo
 
+### Go commands
+- atualizar o go.mod:
+```bash
+go mod tidy
+```
+
 ### MongoDB
 ```bash
 docker run --name mongodb -d -p 27017:27017 mongo
