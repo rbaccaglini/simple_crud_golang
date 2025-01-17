@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	MONGODB_USER_DB            = "MONGODB_USER_DB"
 	MONGODB_USER_DB_COLLECTION = "users"
 )
 
