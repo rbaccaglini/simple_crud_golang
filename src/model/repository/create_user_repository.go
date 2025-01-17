@@ -2,11 +2,12 @@ package repository
 
 import (
 	"context"
-	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
 	"github.com/rbaccaglini/simple_crud_golang/src/model"
+	entity "github.com/rbaccaglini/simple_crud_golang/src/model/repository/converter"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
 )
 
@@ -21,21 +22,17 @@ func (ur *userRepository) CreateUser(
 	userDomain model.UserDomainInterface) (model.UserDomainInterface, *rest_err.RestErr) {
 	logger.Info("Init createUser repository", JOURNEY)
 
-	collection_name := MONGODB_USER_DB_COLLECTION
-	collection := ur.databaseConnection.Collection(os.Getenv(collection_name))
+	collection := ur.databaseConnection.Collection(MONGODB_USER_DB_COLLECTION)
 
-	value, err := userDomain.GetJSONValue()
-	if err != nil {
-		return nil, rest_err.NewInternalServerError(err.Error())
-	}
+	value := entity.ConverterDomainToEntity(userDomain)
 
 	result, err := collection.InsertOne(context.Background(), value)
 	if err != nil {
 		return nil, rest_err.NewInternalServerError(err.Error())
 	}
 
-	userDomain.SetId(result.InsertedID.(string))
+	value.ID = result.InsertedID.(primitive.ObjectID)
 
-	return userDomain, nil
+	return entity.ConverterEntityToDomain(*value), nil
 
 }
