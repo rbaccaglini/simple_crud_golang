@@ -6,10 +6,10 @@ import (
 )
 
 func InitRouter(r *gin.RouterGroup, controller controller.UserControllerInterface) {
-	r.GET("/getUserById/:userId", controller.FindUserById)
-	r.GET("/getUserByEmail/:userEmail", controller.FindUserByEmail)
-	r.GET("/users", controller.FindAllUsers)
-	r.POST("/createUser", controller.CreateUser)
-	r.PUT("/updateUser/:userId", controller.UpdateUser)
-	r.DELETE("/deleteUser/:userId", controller.DeleteUser)
+	r.GET("/user/byId/:userId", controller.FindUserById)
+	r.GET("/user/byEmail/:userEmail", controller.FindUserByEmail)
+	r.GET("/user", controller.FindAllUsers)
+	r.POST("/user", controller.CreateUser)
+	r.PUT("/user/:userId", controller.UpdateUser)
+	r.DELETE("/user/:userId", controller.DeleteUser)
 }
