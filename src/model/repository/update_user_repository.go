@@ -22,9 +22,8 @@ func (ur *userRepository) UpdateUser(id string, domain model.UserDomainInterface
 	value := entity.ConverterDomainToEntity(domain)
 	userId, _ := primitive.ObjectIDFromHex(id)
 
-	filter := bson.D{{Key: "_id", Value: userId}}
 	update := bson.D{{Key: "$set", Value: value}}
-	_, err := collection.UpdateOne(context.Background(), filter, update)
+	_, err := collection.UpdateByID(context.Background(), userId, update)
 	if err != nil {
 		errMessage := fmt.Sprintf("Error on update user with id %s", id)
 		logger.Error(errMessage, err, journey)
