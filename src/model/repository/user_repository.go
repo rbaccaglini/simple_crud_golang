@@ -26,4 +26,5 @@ type UserRepository interface {
 	FindUserById(string) (model.UserDomainInterface, *rest_err.RestErr)
 	FindAllUsers() ([]model.UserDomainInterface, *rest_err.RestErr)
 	DeleteUser(string) *rest_err.RestErr
+	UpdateUser(string, model.UserDomainInterface) *rest_err.RestErr
 }

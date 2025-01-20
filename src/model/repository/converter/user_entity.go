@@ -7,10 +7,10 @@ import (
 
 type UserEntity struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Email    string             `bson:"email"`
-	Password string             `bson:"password"`
-	Name     string             `bson:"name"`
-	Age      int8               `bson:"age"`
+	Email    string             `bson:"email,omitempty"`
+	Password string             `bson:"password,omitempty"`
+	Name     string             `bson:"name,omitempty"`
+	Age      int8               `bson:"age,omitempty"`
 }
 
 func ConverterDomainToEntity(domain model.UserDomainInterface) *UserEntity {

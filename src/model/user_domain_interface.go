@@ -26,6 +26,13 @@ func NewUserDomain(email, password, name string, age int8) UserDomainInterface {
 	}
 }
 
+func NewUserUpdateDomain(name string, age int8) UserDomainInterface {
+	return &userDomain{
+		name: name,
+		age:  age,
+	}
+}
+
 func (ud *userDomain) EncryptPassword() {
 	hash := md5.New()
 	defer hash.Reset()

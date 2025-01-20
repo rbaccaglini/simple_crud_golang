@@ -37,6 +37,6 @@ func (uc *userControllerInterface) DeleteUser(c *gin.Context) {
 
 	logger.Info("User deleted with success", journey)
 
-	c.JSON(http.StatusNoContent, nil)
+	c.Status(http.StatusNoContent)
 
 }
