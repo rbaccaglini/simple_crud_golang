@@ -6,11 +6,11 @@ import (
 )
 
 type UserEntity struct {
-	ID       primitive.ObjectID `bson: "_id, omitempty"`
-	Email    string             `bson: "email"`
-	Password string             `bson: "password"`
-	Name     string             `bson: "name"`
-	Age      int8               `bson: "age"`
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Email    string             `bson:"email"`
+	Password string             `bson:"password"`
+	Name     string             `bson:"name"`
+	Age      int8               `bson:"age"`
 }
 
 func ConverterDomainToEntity(domain model.UserDomainInterface) *UserEntity {
@@ -24,6 +24,6 @@ func ConverterDomainToEntity(domain model.UserDomainInterface) *UserEntity {
 
 func ConverterEntityToDomain(entity UserEntity) model.UserDomainInterface {
 	domain := model.NewUserDomain(entity.Email, entity.Password, entity.Name, entity.Age)
-	domain.SetId(entity.ID.Hex())
+	domain.SetID(entity.ID.Hex())
 	return domain
 }

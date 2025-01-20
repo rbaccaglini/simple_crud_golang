@@ -13,6 +13,7 @@ go mod init github.com/rbaccaglini/simple_crud_golang
 - go get github.com/go-playground/validator/v10
 - go get -u go.uber.org/zap
 - go get go.mongodb.org/mongo-driver/mongo
+- go get github.com/google/uuid
 
 ### Go commands
 - atualizar o go.mod:
@@ -24,3 +25,6 @@ go mod tidy
 ```bash
 docker run --name mongodb -d -p 27017:27017 mongo
 ```
+
+###
+- [Standard Go Project Layout](https://github.com/golang-standards/project-layout/blob/master/README.md)

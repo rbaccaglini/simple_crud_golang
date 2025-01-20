@@ -8,11 +8,11 @@ type userDomain struct {
 	age      int8
 }
 
-func (ud *userDomain) GetId() string {
+func (ud *userDomain) GetID() string {
 	return ud.id
 }
 
-func (ud *userDomain) SetId(id string) {
+func (ud *userDomain) SetID(id string) {
 	ud.id = id
 }
 

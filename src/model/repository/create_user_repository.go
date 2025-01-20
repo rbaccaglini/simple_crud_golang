@@ -11,15 +11,9 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	MONGODB_USER_DB_COLLECTION = "users"
-)
-
-var JOURNEY = zap.String("journey", "CreateUserRepository")
-
 func (ur *userRepository) CreateUser(
 	userDomain model.UserDomainInterface) (model.UserDomainInterface, *rest_err.RestErr) {
-	logger.Info("Init createUser repository", JOURNEY)
+	logger.Info("Init createUser repository", zap.String("journey", "CreateUserRepository"))
 
 	collection := ur.databaseConnection.Collection(MONGODB_USER_DB_COLLECTION)
 
