@@ -16,3 +16,8 @@ func (ud *userDomainService) FindUserByEmailService(email string) (model.UserDom
 	logger.Info("Finding user", zap.String("journey", "FindUserByEmail"))
 	return ud.userRepo.FindUserByEmail(email)
 }
+
+func (ud *userDomainService) FindAllUsersService() ([]model.UserDomainInterface, *rest_err.RestErr) {
+	logger.Info("Finding all users", zap.String("journey", "FindAllUsers"))
+	return ud.userRepo.FindAllUsers()
+}

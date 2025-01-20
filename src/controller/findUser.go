@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"net/mail"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
+	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/response"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
 	"github.com/rbaccaglini/simple_crud_golang/src/view"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -79,4 +81,26 @@ func (uc *userControllerInterface) FindUserByEmail(c *gin.Context) {
 
 	logger.Info("User found by email with soccess", zap.String("journey", "FindUserByEmail"))
 	c.JSON(http.StatusOK, view.ConvertDomainToResponse(userDomain))
+}
+
+func (uc *userControllerInterface) FindAllUsers(c *gin.Context) {
+	journey := zap.String("journey", "FindAllUsers")
+	logger.Info("Init Find All Users controller", journey)
+
+	listUserDomain, err := uc.service.FindAllUsersService()
+	if err != nil {
+		logger.Error("Error on call find all users service", err, journey)
+		c.JSON(err.Code, err)
+		return
+	}
+
+	listView := []response.UserResponse{}
+	for _, user := range listUserDomain {
+		viewUser := view.ConvertDomainToResponse(user)
+		listView = append(listView, viewUser)
+	}
+
+	logger.Info(fmt.Sprintf("There are %d users in DB", len(listView)), journey)
+
+	c.JSON(http.StatusOK, listView)
 }

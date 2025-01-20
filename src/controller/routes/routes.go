@@ -8,6 +8,7 @@ import (
 func InitRouter(r *gin.RouterGroup, controller controller.UserControllerInterface) {
 	r.GET("/getUserById/:userId", controller.FindUserById)
 	r.GET("/getUserByEmail/:userEmail", controller.FindUserByEmail)
+	r.GET("/users", controller.FindAllUsers)
 	r.POST("/createUser", controller.CreateUser)
 	r.PUT("/updateUser/:userId", controller.UpdateUser)
 	r.DELETE("/deleteUser/:userId", controller.DeleteUser)

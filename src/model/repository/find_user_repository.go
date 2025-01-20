@@ -26,6 +26,35 @@ func (ur *userRepository) FindUserById(id string) (model.UserDomainInterface, *r
 	return userFound, err
 }
 
+func (ur *userRepository) FindAllUsers() ([]model.UserDomainInterface, *rest_err.RestErr) {
+	journey := zap.String("journey", "FindAllUsers")
+	logger.Info("Init Find All Users repository", journey)
+
+	filter := bson.D{}
+	collection := ur.databaseConnection.Collection(MONGODB_USER_DB_COLLECTION)
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		errMessage := "Error trying to get all users"
+		logger.Error(errMessage, err, journey)
+		return nil, rest_err.NewInternalServerError(errMessage)
+	}
+
+	resp := []model.UserDomainInterface{}
+	for cur.Next(context.Background()) {
+		userEntity := &entity.UserEntity{}
+		err := cur.Decode(userEntity)
+		if err != nil {
+			errMessage := "Error trying to get all users"
+			logger.Error(errMessage, err, journey)
+			return nil, rest_err.NewInternalServerError(errMessage)
+		}
+		userDomain := entity.ConverterEntityToDomain(*userEntity)
+		resp = append(resp, userDomain)
+	}
+
+	return resp, nil
+}
+
 func (ur *userRepository) findBy(field string, value string) (model.UserDomainInterface, *rest_err.RestErr) {
 
 	journey := zap.String("journey", "FindUserByField")
