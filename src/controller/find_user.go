@@ -9,7 +9,6 @@ import (
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
 	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/response"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
-	"github.com/rbaccaglini/simple_crud_golang/src/model"
 	"github.com/rbaccaglini/simple_crud_golang/src/view"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
@@ -87,13 +86,6 @@ func (uc *userControllerInterface) FindUserByEmail(c *gin.Context) {
 func (uc *userControllerInterface) FindAllUsers(c *gin.Context) {
 	journey := zap.String("journey", "FindAllUsers")
 	logger.Info("Init Find All Users controller", journey)
-
-	t := c.GetHeader("Authorization")
-	_, err := model.VerifyToken(t)
-	if err != nil {
-		c.JSON(err.Code, err)
-		return
-	}
 
 	listUserDomain, err := uc.service.FindAllUsersService()
 	if err != nil {
