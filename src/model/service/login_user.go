@@ -7,14 +7,25 @@ import (
 	"go.uber.org/zap"
 )
 
-func (ud *userDomainService) LoginUserService(domain model.UserDomainInterface) (model.UserDomainInterface, *rest_err.RestErr) {
+func (ud *userDomainService) LoginUserService(
+	domain model.UserDomainInterface,
+) (model.UserDomainInterface, string, *rest_err.RestErr) {
 	logger.Info("Finding user", zap.String("journey", "Login User Service"))
 	domain.EncryptPassword()
+
 	r, err := ud.findUserByEmailAndPassService(domain.GetEmail(), domain.GetPassword())
 
-	if err != nil && err.Code == 404 {
-		return nil, rest_err.NewForbiddenError("Invalid credentials")
+	if err != nil {
+		if err.Code == 404 {
+			return nil, "", rest_err.NewForbiddenError("Invalid credentials")
+		}
+		return nil, "", err
 	}
 
-	return r, err
+	t, err := r.GenerateToken()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return r, t, nil
 }

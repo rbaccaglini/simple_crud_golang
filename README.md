@@ -14,6 +14,7 @@ go mod init github.com/rbaccaglini/simple_crud_golang
 - go get -u go.uber.org/zap
 - go get go.mongodb.org/mongo-driver/mongo
 - go get github.com/google/uuid
+- go get -u github.com/golang-jwt/jwt
 
 ### Go commands
 - atualizar o go.mod:

@@ -3,6 +3,8 @@ package model
 import (
 	"crypto/md5"
 	"encoding/hex"
+
+	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
 )
 
 type UserDomainInterface interface {
@@ -15,6 +17,7 @@ type UserDomainInterface interface {
 	SetID(string)
 
 	EncryptPassword()
+	GenerateToken() (string, *rest_err.RestErr)
 }
 
 func NewUserDomain(email, password, name string, age int8) UserDomainInterface {

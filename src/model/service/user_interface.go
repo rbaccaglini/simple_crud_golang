@@ -24,5 +24,5 @@ type UserDomainService interface {
 
 	DeleteUser(string) *rest_err.RestErr
 
-	LoginUserService(model.UserDomainInterface) (model.UserDomainInterface, *rest_err.RestErr)
+	LoginUserService(model.UserDomainInterface) (model.UserDomainInterface, string, *rest_err.RestErr)
 }
