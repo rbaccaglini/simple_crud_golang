@@ -14,18 +14,14 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	JOURNEY             = zap.String("journey", "CreateUser")
-	UserDomainInterface model.UserDomainInterface
-)
+func (uc *userControllerInterface) Login(c *gin.Context) {
+	var JOURNEY = zap.String("journey", "Login")
 
-func (uc *userControllerInterface) CreateUser(c *gin.Context) {
+	logger.Info("Login function called", JOURNEY)
 
-	logger.Info("CreateUser function called", JOURNEY)
+	var LoginRequest request.UserLoginRequest
 
-	var UserRequest request.UserRequest
-
-	if err := c.ShouldBindJSON(&UserRequest); err != nil {
+	if err := c.ShouldBindJSON(&LoginRequest); err != nil {
 		logger.Error("There are some incorrect fields", err, JOURNEY)
 		restErr := rest_err.NewBadRequestError(fmt.Sprintf("There are some incorrect fields, error=%s", err.Error()))
 		errRest := validation.ValidateUserError(err)
@@ -33,26 +29,23 @@ func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 		return
 	}
 
-	domain := model.NewUserDomain(
-		UserRequest.Email,
-		UserRequest.Password,
-		UserRequest.Name,
-		UserRequest.Age,
+	loginDomain := model.NewLoginDomain(
+		LoginRequest.Email,
+		LoginRequest.Password,
 	)
 
-	domainResult, err := uc.service.CreateUserService(domain)
+	domainResult, err := uc.service.LoginUserService(loginDomain)
 	if err != nil {
-		logger.Error("Error on call create user service", err, JOURNEY)
+		logger.Error("Error on call login service", err, JOURNEY)
 		c.JSON(err.Code, err)
 		return
 	}
 
 	logger.Info(
-		"User created successfully",
+		"Logged with success",
 		zap.String("userId", domainResult.GetID()),
 		JOURNEY,
 	)
 
-	c.JSON(http.StatusCreated, view.ConvertDomainToResponse(domainResult))
-
+	c.JSON(http.StatusOK, view.ConvertDomainToResponse(domainResult))
 }

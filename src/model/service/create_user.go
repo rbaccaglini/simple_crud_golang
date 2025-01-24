@@ -16,12 +16,10 @@ func (ud *userDomainService) CreateUserService(
 
 	user, err := ud.FindUserByEmailService(userDomain.GetEmail())
 	if err != nil {
-		if err.Code == http.StatusNotFound {
+		if err.Code != http.StatusNotFound {
 			logger.Error("Email is already registered", err, zap.String("journey", "CreateUser"))
 			return nil, rest_err.NewBadRequestError("Email is already registered")
 		}
-		logger.Error("Error on verify email", err, zap.String("journey", "CreateUser"))
-		return nil, rest_err.NewInternalServerError("Error on verify email")
 	}
 
 	if user != nil {

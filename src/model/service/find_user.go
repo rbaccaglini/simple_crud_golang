@@ -21,3 +21,8 @@ func (ud *userDomainService) FindAllUsersService() ([]model.UserDomainInterface,
 	logger.Info("Finding all users", zap.String("journey", "FindAllUsers"))
 	return ud.userRepo.FindAllUsers()
 }
+
+func (ud *userDomainService) findUserByEmailAndPassService(email, password string) (model.UserDomainInterface, *rest_err.RestErr) {
+	logger.Info("Finding user", zap.String("journey", "FindUserByEmail"))
+	return ud.userRepo.FindUserByEmailAndPass(email, password)
+}
