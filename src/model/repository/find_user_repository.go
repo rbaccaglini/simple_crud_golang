@@ -39,6 +39,7 @@ func (ur *userRepository) FindAllUsers() ([]model.UserDomainInterface, *rest_err
 		logger.Error(errMessage, err, journey)
 		return nil, rest_err.NewInternalServerError(errMessage)
 	}
+	defer cur.Close(context.Background())
 
 	resp := []model.UserDomainInterface{}
 	for cur.Next(context.Background()) {
