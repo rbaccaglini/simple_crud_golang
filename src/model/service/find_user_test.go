@@ -179,7 +179,7 @@ func TestUserDomainService_findUserByEmailAndPassService(t *testing.T) {
 	mud.SetID(id)
 
 	t.Run("when_exists_an_user_returns_success", func(t *testing.T) {
-		r.EXPECT().FindUserByEmailAndPass(email, password).Return(mud, nil)
+		r.EXPECT().FindUserByEmailAndPass(gomock.Any(), gomock.Any()).Return(mud, nil)
 
 		ud, err := srv.findUserByEmailAndPassService(email, password)
 
@@ -188,7 +188,7 @@ func TestUserDomainService_findUserByEmailAndPassService(t *testing.T) {
 	})
 
 	t.Run("when_user_not_found", func(t *testing.T) {
-		r.EXPECT().FindUserByEmailAndPass(email, password).Return(
+		r.EXPECT().FindUserByEmailAndPass(gomock.Any(), gomock.Any()).Return(
 			nil,
 			rest_err.NewNotFoundError("User not found."),
 		)

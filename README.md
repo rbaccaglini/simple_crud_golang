@@ -27,8 +27,20 @@ go mod tidy
 docker run --name mongodb -d -p 27017:27017 mongo
 ```
 ### Mockgen
-- go install go.uber.org/mock/mockgen@latest
-- mockgen -source=src/model/repository/user_repository.go -destination=src/test/mocks/user_repository_mock.go -package=mocks
+- installing mockgen
+```bash
+go install go.uber.org/mock/mockgen@latest
+```
+
+- creating user repository mock
+```bash
+mockgen -source=src/model/repository/user_repository.go -destination=src/test/mocks/user_repository_mock.go -package=mocks
+```
+
+- creating user domain mock
+```bash
+mockgen -source=src/model/user_domain_interface.go -destination=src/test/mocks/user_domain_interface_mock.go -package=mocks
+```
 
 ### Uteis
 - [Standard Go Project Layout](https://github.com/golang-standards/project-layout/blob/master/README.md)
