@@ -29,7 +29,7 @@ func (uc *userControllerInterface) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	if err := uc.service.DeleteUser(userId); err != nil {
+	if err := uc.service.DeleteUserService(userId); err != nil {
 		logger.Error("Error on call delete user service", err, journey)
 		c.JSON(err.Code, err)
 		return
