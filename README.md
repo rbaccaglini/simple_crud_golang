@@ -15,6 +15,7 @@ go mod init github.com/rbaccaglini/simple_crud_golang
 - go get go.mongodb.org/mongo-driver/mongo
 - go get github.com/google/uuid
 - go get -u github.com/golang-jwt/jwt
+- go get -u github.com/ory/dockertest/v3
 
 ### Go commands
 - atualizar o go.mod:
@@ -40,6 +41,11 @@ mockgen -source=src/model/repository/user_repository.go -destination=src/test/mo
 - creating user domain mock
 ```bash
 mockgen -source=src/model/user_domain_interface.go -destination=src/test/mocks/user_domain_interface_mock.go -package=mocks
+```
+
+- creating user domain service mock
+```bash
+mockgen -source=src/model/service/user_interface.go -destination=src/test/mocks/user_interface_mock.go -package=mocks
 ```
 
 ### Uteis
