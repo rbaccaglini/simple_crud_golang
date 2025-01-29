@@ -49,8 +49,9 @@ func (uc *userControllerInterface) UpdateUser(c *gin.Context) {
 	if err := uc.service.UpdateUserService(userId, domain); err != nil {
 		logger.Error("Error on call update user service", err, journey)
 		c.JSON(err.Code, err)
+		return
 	}
 
 	logger.Info(fmt.Sprintf("User with id %s updated successfully", userId), journey)
-	c.Status(http.StatusNoContent)
+	c.JSON(http.StatusNoContent, nil)
 }
