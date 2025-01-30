@@ -23,7 +23,22 @@ func (ur *userRepository) UpdateUser(id string, domain model.UserDomainInterface
 	value := entity.ConverterDomainToEntity(domain)
 	userId, _ := primitive.ObjectIDFromHex(id)
 
-	update := bson.D{{Key: "$set", Value: value}}
+	var values = bson.D{}
+
+	if value.Name != "" {
+		values = append(values, bson.E{Key: "name", Value: value.Name})
+	}
+
+	if value.Age != 0 {
+		values = append(values, bson.E{Key: "age", Value: value.Age})
+	}
+
+	update := bson.D{
+		{
+			Key: "$set", Value: values,
+		},
+	}
+
 	_, err := collection.UpdateByID(context.Background(), userId, update)
 	if err != nil {
 		errMessage := fmt.Sprintf("Error on update user with id %s", id)

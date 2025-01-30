@@ -15,16 +15,15 @@ func main() {
 
 	logger.Info("Starting aplication")
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load()
+	logger.Info("Config env loaded")
 
 	database, err := mongodb.NewMongoDBConnection(context.Background())
 	if err != nil {
 		log.Fatalf("Error trying to connect on DB: %v", err.Error())
 		return
 	}
+	logger.Info("DB connected")
 
 	userController := initDependencies(database)
 

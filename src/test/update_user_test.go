@@ -73,9 +73,16 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("user not exists", func(t *testing.T) {
 
 		// Preparing Database Records
-		_, err := Database.
+		uid, err := Database.
 			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
-			InsertOne(context.Background(), bson.M{"name": t.Name(), "email": "test@test.com", "age": 20})
+			InsertOne(
+				context.Background(),
+				bson.M{
+					"name":  t.Name(),
+					"email": "test@test.com",
+					"age":   20,
+				},
+			)
 		if err != nil {
 			t.Fatal(err)
 			return
@@ -93,7 +100,7 @@ func TestUpdateUser(t *testing.T) {
 		stringReader := io.NopCloser(strings.NewReader(string(b)))
 
 		param := []gin.Param{
-			{Key: "userId", Value: primitive.NewObjectID().Hex()},
+			{Key: "userId", Value: uid.InsertedID.(primitive.ObjectID).Hex()},
 		}
 
 		// Act
