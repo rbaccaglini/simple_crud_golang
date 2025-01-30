@@ -50,12 +50,20 @@ mockgen -source=src/model/service/user_interface.go -destination=src/test/mocks/
 
 ### Uteis
 - [Standard Go Project Layout](https://github.com/golang-standards/project-layout/blob/master/README.md)
+- Commands
+```bash
+docker container stop $(docker ps -a -q)
+docker container rm $(docker ps -a -q)
+docker image rm meuprimeirocrudgo
+```
 
 ### Docker
+- Build image
 ```bash
 docker build -t meuprimeirocrudgo .
 ```
 
+- Run container
 ```bash
 docker container run -d -p 8080:8080 meuprimeirocrudgo
 ```

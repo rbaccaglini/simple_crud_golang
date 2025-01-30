@@ -1,0 +1,27 @@
+version: '3'
+services:
+  meuprimeirocrudgo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - MONGODB_URL={mongodb-url}
+      - MONGODB_DB={mongodb-db}
+      - MONGODB_USER_DB_COLLECTION={mongodb-user-db-collection}
+      - JWT_SECRET_KEY={jwt-secret-key}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+    networks:
+      - meu_crud_network
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - meu_crud_network
+
+networks:
+  meu_crud_network:

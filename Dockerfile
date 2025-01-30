@@ -1,4 +1,4 @@
-FROM golang:1.19 AS BUILDER
+FROM amd64/golang:1.23 AS BUILDER
 
 WORKDIR /app
 COPY src src
@@ -11,17 +11,10 @@ COPY main.go main.go
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on \
  GOOS=linux go build -o meuprimeirocrudgo .
 
-FROM golang:1.19-alpine3.15 as runner
+FROM golang:1.23-alpine as RUNNER
 
-RUN adduser -D urunner
-
-COPY --from=BUILDER /app/meuprimeirocrudgo /app/meuprimeirocrudgo
-
-RUN chown -R urunner:urunner /app
-RUN chmod +x /app/meuprimeirocrudgo
+COPY --from=BUILDER /app/meuprimeirocrudgo .
 
 EXPOSE 8080
-
-USER urunner
 
 CMD ["./meuprimeirocrudgo"]
