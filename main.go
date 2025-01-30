@@ -7,12 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/database/mongodb"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller"
 	"github.com/rbaccaglini/simple_crud_golang/src/controller/routes"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/repository"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/service"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
@@ -37,12 +33,4 @@ func main() {
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
-}
-
-func initDependencies(
-	database *mongo.Database,
-) controller.UserControllerInterface {
-	repo := repository.NewUserRepository(database)
-	service := service.NewUserDomainService(repo)
-	return controller.NewUserControllerInterface(service)
 }

@@ -2,7 +2,7 @@ package tests
 
 import (
 	"context"
-	"io"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -10,74 +10,28 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/repository"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/service"
-	"github.com/rbaccaglini/simple_crud_golang/src/test/connection"
+	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/response"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
-
-var (
-	UserController controller.UserControllerInterface
-	Database       *mongo.Database
-)
-
-func TestMain(m *testing.M) {
-	err := os.Setenv("MONGODB_USER_DB", "test_user")
-	if err != nil {
-		return
-	}
-
-	closeConnection := func() {}
-	Database, closeConnection = connection.OpenConnection()
-
-	repo := repository.NewUserRepository(Database)
-	userService := service.NewUserDomainService(repo)
-	UserController = controller.NewUserControllerInterface(userService)
-
-	defer func() {
-		os.Clearenv()
-		closeConnection()
-	}()
-
-	os.Exit(m.Run())
-}
 
 func TestFindUserByEmail(t *testing.T) {
 
 	t.Run("user_not_found_with_this__email", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
-		ctx := GetTestGinContext(recorder)
-
-		param := []gin.Param{
-			{
-				Key:   "userEmail",
-				Value: "test@test.com",
-			},
-		}
-
-		MakeRequest(ctx, param, url.Values{}, "GET", nil)
-		UserController.FindUserByEmail(ctx)
-
-		assert.EqualValues(t, http.StatusNotFound, recorder.Code)
-	})
-
-	t.Run("user__found_with_specified_email", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
-		ctx := GetTestGinContext(recorder)
-		id := primitive.NewObjectID().Hex()
-
-		_, err := Database.
-			Collection("test_user").
-			InsertOne(context.Background(), bson.M{"_id": id, "name": t.Name(), "email": "test@test.com"})
+		// Preparing Database Records
+		err := Database.
+			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
+			Drop(context.Background())
 		if err != nil {
 			t.Fatal(err)
 			return
 		}
 
+		// Arrange
+		recorder := httptest.NewRecorder()
+		ctx := GetTestGinContext(recorder)
+
 		param := []gin.Param{
 			{
 				Key:   "userEmail",
@@ -85,9 +39,39 @@ func TestFindUserByEmail(t *testing.T) {
 			},
 		}
 
+		// Act
 		MakeRequest(ctx, param, url.Values{}, "GET", nil)
 		UserController.FindUserByEmail(ctx)
 
+		// Assert
+		assert.EqualValues(t, http.StatusNotFound, recorder.Code)
+	})
+
+	t.Run("user__found_with_specified_email", func(t *testing.T) {
+		// Arrange
+		recorder := httptest.NewRecorder()
+		ctx := GetTestGinContext(recorder)
+		param := []gin.Param{
+			{
+				Key:   "userEmail",
+				Value: "test@test.com",
+			},
+		}
+
+		// Preparing Database Records
+		_, err := Database.
+			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
+			InsertOne(context.Background(), bson.M{"name": t.Name(), "email": "test@test.com"})
+		if err != nil {
+			t.Fatal(err)
+			return
+		}
+
+		// Act
+		MakeRequest(ctx, param, url.Values{}, "GET", nil)
+		UserController.FindUserByEmail(ctx)
+
+		// Assert
 		assert.EqualValues(t, http.StatusOK, recorder.Code)
 	})
 }
@@ -95,6 +79,7 @@ func TestFindUserByEmail(t *testing.T) {
 func TestFindUserById(t *testing.T) {
 
 	t.Run("user_not_found_with_this_id", func(t *testing.T) {
+		// Arrange
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 		id := primitive.NewObjectID().Hex()
@@ -106,61 +91,117 @@ func TestFindUserById(t *testing.T) {
 			},
 		}
 
+		// Act
 		MakeRequest(ctx, param, url.Values{}, "GET", nil)
 		UserController.FindUserById(ctx)
 
+		// Assert
 		assert.EqualValues(t, http.StatusNotFound, recorder.Code)
 	})
 
 	t.Run("user_found_with_specified_id", func(t *testing.T) {
+		// Arrange
+		id := primitive.NewObjectID()
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
-		id := primitive.NewObjectID()
-
-		_, err := Database.
-			Collection("test_user").
-			InsertOne(context.Background(), bson.M{"_id": id, "name": t.Name(), "email": "test@test.com"})
-		if err != nil {
-			t.Fatal(err)
-			return
-		}
-
 		param := []gin.Param{
 			{
 				Key:   "userId",
 				Value: id.Hex(),
 			},
 		}
-
 		MakeRequest(ctx, param, url.Values{}, "GET", nil)
+
+		// Preparing Database Records
+		_, err := Database.
+			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
+			InsertOne(context.Background(), bson.M{"_id": id, "name": t.Name(), "email": "test@test.com"})
+		if err != nil {
+			t.Fatal(err)
+			return
+		}
+
+		// Act
 		UserController.FindUserById(ctx)
 
+		// Assert
 		assert.EqualValues(t, http.StatusOK, recorder.Code)
 	})
 }
 
-func GetTestGinContext(recorder *httptest.ResponseRecorder) *gin.Context {
-	gin.SetMode(gin.TestMode)
+func TestFindAllUsers(t *testing.T) {
+	t.Run("empty user list", func(t *testing.T) {
+		// Arrange
+		r := httptest.NewRecorder()
+		ctx := GetTestGinContext(r)
 
-	ctx, _ := gin.CreateTestContext(recorder)
-	ctx.Request = &http.Request{
-		Header: make(http.Header),
-		URL:    &url.URL{},
-	}
+		// Drop all data in DB
+		if err := Database.
+			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
+			Drop(context.Background()); err != nil {
+			t.Fatal(err)
+			return
+		}
 
-	return ctx
-}
+		// Act
+		MakeRequest(ctx, []gin.Param{}, url.Values{}, "GET", nil)
+		UserController.FindAllUsers(ctx)
 
-func MakeRequest(
-	c *gin.Context,
-	param gin.Params,
-	u url.Values,
-	method string,
-	body io.ReadCloser) {
-	c.Request.Method = method
-	c.Request.Header.Set("Content-Type", "application/json")
-	c.Params = param
+		ur := []response.UserResponse{}
+		b := r.Body.String()
+		err := json.Unmarshal([]byte(b), &ur)
+		if err != nil {
+			t.Fatal(err.Error())
+		}
 
-	c.Request.Body = body
-	c.Request.URL.RawQuery = u.Encode()
+		// Assert
+		assert.EqualValues(t, http.StatusOK, r.Code)
+		assert.EqualValues(t, 0, len(ur))
+	})
+
+	t.Run("user list", func(t *testing.T) {
+
+		// Preparing Database Records
+		_, err := Database.
+			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
+			InsertMany(
+				context.Background(),
+				[]interface{}{
+					bson.M{"name": t.Name(), "email": "test1@test.com"},
+					bson.M{"name": t.Name(), "email": "test2@test.com"},
+				},
+			)
+		if err != nil {
+			t.Fatal(err)
+			return
+		}
+
+		count, err := Database.
+			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
+			CountDocuments(context.Background(), bson.M{})
+		if err != nil {
+			t.Fatal(err)
+			return
+		}
+
+		// Arrange
+		r := httptest.NewRecorder()
+		ctx := GetTestGinContext(r)
+
+		// Act
+		MakeRequest(ctx, []gin.Param{}, url.Values{}, "GET", nil)
+		UserController.FindAllUsers(ctx)
+
+		ur := []response.UserResponse{}
+		b := r.Body.Bytes()
+		err = json.Unmarshal(b, &ur)
+		if err != nil {
+			t.Fatal(err.Error())
+			return
+		}
+
+		// Assert
+		assert.EqualValues(t, http.StatusOK, r.Code)
+		assert.EqualValues(t, count, len(ur))
+	})
 }

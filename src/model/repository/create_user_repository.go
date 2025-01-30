@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
@@ -15,7 +16,7 @@ func (ur *userRepository) CreateUser(
 	userDomain model.UserDomainInterface) (model.UserDomainInterface, *rest_err.RestErr) {
 	logger.Info("Init createUser repository", zap.String("journey", "CreateUserRepository"))
 
-	collection := ur.databaseConnection.Collection(MONGODB_USER_DB_COLLECTION)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 
 	value := entity.ConverterDomainToEntity(userDomain)
 

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
@@ -14,7 +15,7 @@ import (
 func (ur *userRepository) DeleteUser(id string) *rest_err.RestErr {
 	logger.Info("Init deleteUser repository", zap.String("journey", "DeleteUserRepository"))
 
-	collection := ur.databaseConnection.Collection(MONGODB_USER_DB_COLLECTION)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 
 	userId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: userId}}

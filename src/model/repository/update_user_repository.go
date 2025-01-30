@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
 	"github.com/rbaccaglini/simple_crud_golang/src/logger"
@@ -17,7 +18,7 @@ func (ur *userRepository) UpdateUser(id string, domain model.UserDomainInterface
 	journey := zap.String("journey", "UpdateUserRepository")
 	logger.Info("Init update user repository", journey)
 
-	collection := ur.databaseConnection.Collection(MONGODB_USER_DB_COLLECTION)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 
 	value := entity.ConverterDomainToEntity(domain)
 	userId, _ := primitive.ObjectIDFromHex(id)
@@ -30,7 +31,7 @@ func (ur *userRepository) UpdateUser(id string, domain model.UserDomainInterface
 		return rest_err.NewInternalServerError(err.Error())
 	}
 
-	logger.Info(fmt.Sprintf("User (id: %s) deleted with success", id), journey)
+	logger.Info(fmt.Sprintf("User (id: %s) updated with success", id), journey)
 
 	return nil
 }

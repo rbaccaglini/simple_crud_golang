@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	MONGODB_USER_DB_COLLECTION = "users"
+	MONGODB_USER_DB_COLLECTION = "MONGODB_USER_DB_COLLECTION"
 )
 
 func NewUserRepository(database *mongo.Database) UserRepository {
