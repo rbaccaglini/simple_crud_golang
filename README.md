@@ -35,7 +35,7 @@ go install go.uber.org/mock/mockgen@latest
 
 - creating user repository mock
 ```bash
-mockgen -source=src/model/repository/user_repository.go -destination=src/test/mocks/user_repository_mock.go -package=mocks
+mockgen -source=internal/repositories/user/user_repository_interface.go -destination=test/mocks/user_repository_interface_mock.go -package=mocks
 ```
 
 - creating user domain mock

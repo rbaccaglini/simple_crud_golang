@@ -1,6 +1,7 @@
 package user_service
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
@@ -29,14 +30,16 @@ func (us *userDomainService) CreateUser(user domain.UserDomainInterface) (domain
 	u, err := us.userRepo.GetUserByEmail(user.GetEmail())
 	if err != nil {
 		if err.Code != http.StatusNotFound {
-			logger.Error("Email is already registered", err, zap.String("journey", "CreateUser"))
-			return nil, rest_err.NewBadRequestError("Email is already registered")
+			errMsg := "email is already registered"
+			logger.Error(errMsg, err, zap.String("journey", "CreateUser"))
+			return nil, rest_err.NewBadRequestError(fmt.Sprintf("%s: %s", errMsg, err.Message))
 		}
 	}
 
 	if u != nil {
-		logger.Error("Email is already registered", err, zap.String("journey", "CreateUser"))
-		return nil, rest_err.NewBadRequestError("Email is already registered")
+		errMsg := "email is already registered"
+		logger.Error(errMsg, rest_err.NewBadRequestError(errMsg), zap.String("journey", "CreateUser"))
+		return nil, rest_err.NewBadRequestError(errMsg)
 	}
 
 	user.EncryptPassword()
@@ -58,13 +61,13 @@ func (us *userDomainService) UpdateUser(user domain.UserDomainInterface) *rest_e
 	/** get current user data */
 	cUser, err := us.userRepo.GetUserById(user.GetID())
 	if err != nil {
-		logger.Error("User not found", err, journey)
-		rest_err.NewNotFoundError("User not found")
+		logger.Error("user not found", err, journey)
+		rest_err.NewNotFoundError("user not found")
 	}
 
 	/** Check if there is a change to be made */
 	if cUser.GetEmail() == user.GetEmail() && cUser.GetAge() == user.GetAge() {
-		logger.Info("There is no update to do", journey)
+		logger.Info("there is no update to do", journey)
 		return nil
 	}
 
@@ -76,13 +79,13 @@ func (us *userDomainService) Login(email, password string) (string, domain.UserD
 	logger.Info("login user", journey)
 	u, err := us.userRepo.ValidateCredentials(email, password)
 	if err != nil {
-		logger.Info("Erro on validade credentians", journey)
-		return "", nil, rest_err.NewForbiddenError("Invalid credentials")
+		logger.Info("error on validade credentians", journey)
+		return "", nil, rest_err.NewForbiddenError("invalid credentials")
 	}
 	t, err := u.TokenGenerate()
 	if err != nil {
-		logger.Info("Erro on generate token", journey)
-		return "", nil, rest_err.NewInternalServerError("Error on generate token")
+		logger.Info("error on generate token", journey)
+		return "", nil, rest_err.NewInternalServerError("error on generate token")
 	}
 
 	return t, u, nil
