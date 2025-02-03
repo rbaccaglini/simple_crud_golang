@@ -21,7 +21,7 @@ func TestUserService(t *testing.T) {
 	r := mocks.NewMockUserRepository(ctlr)
 	srv := user_service.NewUserDomainService(r)
 
-	t.Run("FindAllUser::service_error", func(t *testing.T) {
+	t.Run("FindAllUser::repository_error", func(t *testing.T) {
 		r.EXPECT().GetUsers().Return(nil, rest_err.NewInternalServerError("error"))
 
 		uds, err := srv.FindAllUser()
@@ -66,7 +66,7 @@ func TestUserService(t *testing.T) {
 		assert.Equal(t, 2, len(uds))
 	})
 
-	t.Run("FindUserById::service_error", func(t *testing.T) {
+	t.Run("FindUserById::repository_error", func(t *testing.T) {
 
 		r.EXPECT().GetUserById("123").Return(nil, rest_err.NewInternalServerError("error"))
 
@@ -90,7 +90,7 @@ func TestUserService(t *testing.T) {
 		assert.Equal(t, resp.GetEmail(), ud.GetEmail())
 	})
 
-	t.Run("FindUserByEmail::service_error", func(t *testing.T) {
+	t.Run("FindUserByEmail::repository_error", func(t *testing.T) {
 		r.EXPECT().GetUserByEmail("test@test.com").Return(nil, rest_err.NewInternalServerError("error"))
 
 		ud, err := srv.FindUserByEmail("test@test.com")
@@ -144,7 +144,7 @@ func TestUserService(t *testing.T) {
 		assert.Nil(t, ud)
 		assert.Contains(t, err.Error(), "email is already registered")
 	})
-	t.Run("CreateUser::service_error", func(t *testing.T) {
+	t.Run("CreateUser::repository_error", func(t *testing.T) {
 
 		r.EXPECT().GetUserByEmail(gomock.Any()).Return(nil, nil)
 		r.EXPECT().InsertUser(gomock.Any()).Return(
@@ -186,7 +186,7 @@ func TestUserService(t *testing.T) {
 		assert.Equal(t, uid, ud.GetID())
 	})
 
-	t.Run("DeleteUser::service_error", func(t *testing.T) {
+	t.Run("DeleteUser::repository_error", func(t *testing.T) {
 		r.EXPECT().DeleteUser("123").Return(rest_err.NewInternalServerError("error"))
 		err := srv.DeleteUser("123")
 		assert.NotNil(t, err)
@@ -223,7 +223,7 @@ func TestUserService(t *testing.T) {
 
 		assert.Nil(t, err)
 	})
-	t.Run("UpdateUser::service_error", func(t *testing.T) {
+	t.Run("UpdateUser::repository_error", func(t *testing.T) {
 		mud := domain.NewUserDomain(
 			"test@test.com", "12#$56", "User Name", 21,
 		)

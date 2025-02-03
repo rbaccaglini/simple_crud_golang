@@ -38,14 +38,14 @@ go install go.uber.org/mock/mockgen@latest
 mockgen -source=internal/repositories/user/user_repository_interface.go -destination=test/mocks/user_repository_interface_mock.go -package=mocks
 ```
 
-- creating user domain mock
+- creating user service mock
 ```bash
-mockgen -source=src/model/user_domain_interface.go -destination=src/test/mocks/user_domain_interface_mock.go -package=mocks
+mockgen -source=internal/services/user/user_service_interface.go -destination=test/mocks/user_service_interface_mock.go -package=mocks
 ```
 
-- creating user domain service mock
+- creating user handler mock
 ```bash
-mockgen -source=src/model/service/user_interface.go -destination=src/test/mocks/user_interface_mock.go -package=mocks
+mockgen -source=internal/handlers/user/user_handler_interface.go -destination=test/mocks/user_handler_interface_mock.go -package=mocks
 ```
 
 ### Uteis
