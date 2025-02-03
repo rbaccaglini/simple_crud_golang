@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
-	"github.com/rbaccaglini/simple_crud_golang/internal/models/entity"
+	"github.com/rbaccaglini/simple_crud_golang/internal/util/converter"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/logger"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,7 +19,7 @@ func (ur *userRepository) InsertUser(user domain.UserDomainInterface) (domain.Us
 
 	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
 
-	value := entity.ConverterDomainToEntity(user)
+	value := converter.ConverterDomainToEntity(user)
 
 	result, err := collection.InsertOne(context.Background(), value)
 	if err != nil {
@@ -28,7 +28,7 @@ func (ur *userRepository) InsertUser(user domain.UserDomainInterface) (domain.Us
 
 	value.ID = result.InsertedID.(primitive.ObjectID)
 
-	return entity.ConverterEntityToDomain(*value), nil
+	return converter.ConverterEntityToDomain(*value), nil
 }
 
 func (ur *userRepository) DeleteUser(uid string) *rest_err.RestErr {
@@ -56,7 +56,7 @@ func (ur *userRepository) UpdateUser(user domain.UserDomainInterface, uid string
 
 	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
 
-	value := entity.ConverterDomainToEntity(user)
+	value := converter.ConverterDomainToEntity(user)
 	userId, _ := primitive.ObjectIDFromHex(uid)
 
 	var values = bson.D{}

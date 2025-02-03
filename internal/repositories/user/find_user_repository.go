@@ -7,6 +7,7 @@ import (
 
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/entity"
+	"github.com/rbaccaglini/simple_crud_golang/internal/util/converter"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/logger"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	"go.mongodb.org/mongo-driver/bson"
@@ -38,7 +39,7 @@ func (ur *userRepository) GetUsers() ([]domain.UserDomainInterface, *rest_err.Re
 			logger.Error(errMessage, err, journey)
 			return nil, rest_err.NewInternalServerError(errMessage)
 		}
-		userDomain := entity.ConverterEntityToDomain(*userEntity)
+		userDomain := converter.ConverterEntityToDomain(*userEntity)
 		resp = append(resp, userDomain)
 	}
 
@@ -89,7 +90,7 @@ func (ur *userRepository) findBy(filter bson.D) (domain.UserDomainInterface, *re
 		return nil, rest_err.NewInternalServerError("Error trying to find user")
 	}
 
-	return entity.ConverterEntityToDomain(*userEntity), nil
+	return converter.ConverterEntityToDomain(*userEntity), nil
 }
 
 func filterAjustment(filter *bson.D) string {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	user_response "github.com/rbaccaglini/simple_crud_golang/internal/models/response/user"
+	"github.com/rbaccaglini/simple_crud_golang/internal/util/converter"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/logger"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,7 +25,7 @@ func (uh *userHandlerInterface) FindAllUser(c *gin.Context) {
 
 	listView := []user_response.UserResponse{}
 	for _, d := range ld {
-		viewUser := d.ConvertDomainToResponse()
+		viewUser := converter.ConvertDomainToResponse(d)
 		listView = append(listView, viewUser)
 	}
 
@@ -60,7 +61,7 @@ func (uh *userHandlerInterface) FindUserById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, d.ConvertDomainToResponse())
+	c.JSON(http.StatusOK, converter.ConvertDomainToResponse(d))
 }
 
 func (uh *userHandlerInterface) FindUserByEmail(c *gin.Context) {
@@ -74,5 +75,5 @@ func (uh *userHandlerInterface) FindUserByEmail(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, d.ConvertDomainToResponse())
+	c.JSON(http.StatusOK, converter.ConvertDomainToResponse(d))
 }

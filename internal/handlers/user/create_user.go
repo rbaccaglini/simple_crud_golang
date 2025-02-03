@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
 	user_request "github.com/rbaccaglini/simple_crud_golang/internal/models/request/user"
+	"github.com/rbaccaglini/simple_crud_golang/internal/util/converter"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/logger"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	validation_err "github.com/rbaccaglini/simple_crud_golang/pkg/utils/validation/validator_err"
@@ -45,6 +46,6 @@ func (uh *userHandlerInterface) CreateUser(c *gin.Context) {
 	}
 
 	logger.Info(fmt.Sprintf("User created with success [id=%s]", d.GetID()), JOURNEY)
-	c.JSON(http.StatusCreated, d.ConvertDomainToResponse())
+	c.JSON(http.StatusCreated, converter.ConvertDomainToResponse(d))
 
 }

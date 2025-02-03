@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	user_response "github.com/rbaccaglini/simple_crud_golang/internal/models/response/user"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 )
 
@@ -23,7 +22,6 @@ type UserDomainInterface interface {
 
 	EncryptPassword()
 	TokenGenerate() (string, *rest_err.RestErr)
-	ConvertDomainToResponse() user_response.UserResponse
 }
 
 func NewUserDomain(email, password, name string, age int8) UserDomainInterface {
@@ -55,15 +53,6 @@ func (ud *userDomain) EncryptPassword() {
 	defer hash.Reset()
 	hash.Write([]byte(ud.password))
 	ud.password = hex.EncodeToString(hash.Sum(nil))
-}
-
-func (ud *userDomain) ConvertDomainToResponse() user_response.UserResponse {
-	return user_response.UserResponse{
-		ID:    ud.GetID(),
-		Email: ud.GetEmail(),
-		Name:  ud.GetName(),
-		Age:   ud.GetAge(),
-	}
 }
 
 func (ud *userDomain) TokenGenerate() (string, *rest_err.RestErr) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	user_request "github.com/rbaccaglini/simple_crud_golang/internal/models/request/user"
+	"github.com/rbaccaglini/simple_crud_golang/internal/util/converter"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/logger"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	"go.uber.org/zap"
@@ -29,5 +30,5 @@ func (uh *userHandlerInterface) Login(c *gin.Context) {
 	}
 
 	c.Header("Authorization", t)
-	c.JSON(http.StatusOK, ud.ConvertDomainToResponse())
+	c.JSON(http.StatusOK, converter.ConvertDomainToResponse(ud))
 }
