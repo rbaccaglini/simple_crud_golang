@@ -37,15 +37,15 @@ func (ur *userRepository) DeleteUser(uid string) *rest_err.RestErr {
 
 	puid, err := primitive.ObjectIDFromHex(uid)
 	if err != nil {
-		logger.Error("create user repository", err, journey)
-		return rest_err.NewInternalServerError(err.Error())
+		logger.Error("invalid user id", err, journey)
+		return rest_err.NewInternalServerError(fmt.Sprintf("invalid user id: %s", err.Error()))
 	}
 	filter := bson.D{{Key: "_id", Value: puid}}
 
 	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
 	if _, errDel := collection.DeleteOne(context.Background(), filter); errDel != nil {
-		logger.Error("create user repository", errDel, journey)
-		return rest_err.NewInternalServerError(errDel.Error())
+		logger.Error("error on delete user", errDel, journey)
+		return rest_err.NewInternalServerError(fmt.Sprintf("error on delete user: %s", errDel.Error()))
 	}
 	return nil
 }
@@ -57,14 +57,16 @@ func (ur *userRepository) UpdateUser(user domain.UserDomainInterface, uid string
 	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
 
 	value := converter.ConverterDomainToEntity(user)
-	userId, _ := primitive.ObjectIDFromHex(uid)
+	userId, errId := primitive.ObjectIDFromHex(uid)
+	if errId != nil {
+		logger.Error("invalid user id", errId, journey)
+		return rest_err.NewInternalServerError(fmt.Sprintf("invalid user id: %s", errId.Error()))
+	}
 
 	var values = bson.D{}
-
 	if value.Name != "" {
 		values = append(values, bson.E{Key: "name", Value: value.Name})
 	}
-
 	if value.Age != 0 {
 		values = append(values, bson.E{Key: "age", Value: value.Age})
 	}
@@ -77,9 +79,10 @@ func (ur *userRepository) UpdateUser(user domain.UserDomainInterface, uid string
 
 	_, err := collection.UpdateByID(context.Background(), userId, update)
 	if err != nil {
-		errMessage := fmt.Sprintf("Error on update user with id %s", uid)
+		errMessage := fmt.Sprintf("error on update user with id %s", uid)
 		logger.Error(errMessage, err, journey)
-		return rest_err.NewInternalServerError(err.Error())
+		return rest_err.NewInternalServerError(
+			fmt.Sprintf("error on update user with id %s: %s", uid, err.Error()))
 	}
 
 	logger.Info(fmt.Sprintf("User (id: %s) updated with success", uid), journey)
