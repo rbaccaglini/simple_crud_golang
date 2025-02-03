@@ -3,6 +3,7 @@ package user_handler
 import (
 	"fmt"
 	"net/http"
+	"net/mail"
 
 	"github.com/gin-gonic/gin"
 	user_response "github.com/rbaccaglini/simple_crud_golang/internal/models/response/user"
@@ -68,6 +69,12 @@ func (uh *userHandlerInterface) FindUserByEmail(c *gin.Context) {
 	journey := zap.String("journey", "FindUserByEmail")
 	logger.Info("Init Find User controller", journey)
 	userEmail := c.Param("email")
+
+	if _, err := mail.ParseAddress(userEmail); err != nil {
+		logger.Error(fmt.Sprintf("Invalid user email: %s", userEmail), err, journey)
+		c.JSON(http.StatusNotFound, rest_err.NewNotFoundError("user not found"))
+		return
+	}
 
 	d, err := uh.service.FindUserByEmail(userEmail)
 	if err != nil {

@@ -1,4 +1,4 @@
-package user_service
+package user_service_test
 
 import (
 	"net/http"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
+	user_service "github.com/rbaccaglini/simple_crud_golang/internal/services/user"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	"github.com/rbaccaglini/simple_crud_golang/test/mocks"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +19,7 @@ func TestUserService(t *testing.T) {
 	defer ctlr.Finish()
 
 	r := mocks.NewMockUserRepository(ctlr)
-	srv := NewUserDomainService(r)
+	srv := user_service.NewUserDomainService(r)
 
 	t.Run("FindAllUser::service_error", func(t *testing.T) {
 		r.EXPECT().GetUsers().Return(nil, rest_err.NewInternalServerError("error"))
@@ -185,16 +186,96 @@ func TestUserService(t *testing.T) {
 		assert.Equal(t, uid, ud.GetID())
 	})
 
-	t.Run("DeleteUser::service_error", func(t *testing.T) {})
-	t.Run("DeleteUser::success", func(t *testing.T) {})
+	t.Run("DeleteUser::service_error", func(t *testing.T) {
+		r.EXPECT().DeleteUser("123").Return(rest_err.NewInternalServerError("error"))
+		err := srv.DeleteUser("123")
+		assert.NotNil(t, err)
+	})
+	t.Run("DeleteUser::success", func(t *testing.T) {
+		r.EXPECT().DeleteUser("123").Return(nil)
+		err := srv.DeleteUser("123")
+		assert.Nil(t, err)
+	})
 
-	t.Run("UpdateUser::user_not_found", func(t *testing.T) {})
-	t.Run("UpdateUser::no_update_to_do", func(t *testing.T) {})
-	t.Run("UpdateUser::service_error", func(t *testing.T) {})
-	t.Run("UpdateUser::success", func(t *testing.T) {})
+	t.Run("UpdateUser::user_not_found", func(t *testing.T) {
+		r.EXPECT().GetUserById(gomock.Any()).Return(nil, rest_err.NewNotFoundError("user not found"))
 
-	t.Run("Login::invalid_credentials", func(t *testing.T) {})
-	t.Run("Login::token_generation_error", func(t *testing.T) {})
-	t.Run("Login::success", func(t *testing.T) {})
+		err := srv.UpdateUser(
+			domain.NewUserUpdateDomain("User Name", 22),
+			"123",
+		)
 
+		assert.NotNil(t, err)
+		assert.Equal(t, http.StatusNotFound, err.Code)
+	})
+	t.Run("UpdateUser::no_update_to_do", func(t *testing.T) {
+
+		mud := domain.NewUserDomain(
+			"test@test.com", "12#$56", "User Name", 21,
+		)
+
+		r.EXPECT().GetUserById(gomock.Any()).Return(mud, nil)
+
+		err := srv.UpdateUser(
+			domain.NewUserUpdateDomain("User Name", 21),
+			"123",
+		)
+
+		assert.Nil(t, err)
+	})
+	t.Run("UpdateUser::service_error", func(t *testing.T) {
+		mud := domain.NewUserDomain(
+			"test@test.com", "12#$56", "User Name", 21,
+		)
+
+		r.EXPECT().GetUserById(gomock.Any()).Return(mud, nil)
+		r.EXPECT().UpdateUser(gomock.Any(), gomock.Any()).
+			Return(rest_err.NewInternalServerError("error"))
+
+		err := srv.UpdateUser(
+			domain.NewUserUpdateDomain("User Name", 22),
+			"123",
+		)
+
+		assert.NotNil(t, err)
+	})
+	t.Run("UpdateUser::success", func(t *testing.T) {
+		mud := domain.NewUserDomain(
+			"test@test.com", "12#$56", "User Name", 21,
+		)
+
+		r.EXPECT().GetUserById(gomock.Any()).Return(mud, nil)
+		r.EXPECT().UpdateUser(gomock.Any(), gomock.Any()).
+			Return(nil)
+
+		err := srv.UpdateUser(
+			domain.NewUserUpdateDomain("User Name", 22),
+			"123",
+		)
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("Login::invalid_credentials", func(t *testing.T) {
+		r.EXPECT().ValidateCredentials(gomock.Any(), gomock.Any()).
+			Return(nil, rest_err.NewNotFoundError("user not found"))
+
+		tk, ud, err := srv.Login("test@email.com", "password")
+		assert.Empty(t, tk)
+		assert.Nil(t, ud)
+		assert.NotNil(t, err)
+		assert.Equal(t, http.StatusForbidden, err.Code)
+	})
+	t.Run("Login::success", func(t *testing.T) {
+		r.EXPECT().ValidateCredentials(gomock.Any(), gomock.Any()).
+			Return(domain.NewUserDomain(
+				"email@email.com", "password", "User Name", 20,
+			), nil)
+
+		tk, ud, err := srv.Login("test@email.com", "password")
+
+		assert.NotEmpty(t, tk)
+		assert.NotNil(t, ud)
+		assert.Nil(t, err)
+	})
 }

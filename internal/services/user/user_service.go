@@ -54,24 +54,28 @@ func (us *userDomainService) DeleteUser(uid string) *rest_err.RestErr {
 	return us.userRepo.DeleteUser(uid)
 }
 
-func (us *userDomainService) UpdateUser(user domain.UserDomainInterface) *rest_err.RestErr {
+func (us *userDomainService) UpdateUser(user domain.UserDomainInterface, uid string) *rest_err.RestErr {
 	journey := zap.String("journey", "updateUserService")
 	logger.Info("update user", journey)
 
 	/** get current user data */
-	cUser, err := us.userRepo.GetUserById(user.GetID())
+	cUser, err := us.userRepo.GetUserById(uid)
 	if err != nil {
 		logger.Error("user not found", err, journey)
-		rest_err.NewNotFoundError("user not found")
+		return rest_err.NewNotFoundError("user not found")
 	}
 
 	/** Check if there is a change to be made */
-	if cUser.GetEmail() == user.GetEmail() && cUser.GetAge() == user.GetAge() {
+
+	logger.Info(fmt.Sprintf("name: '%s' | '%s'", cUser.GetName(), user.GetName()), journey)
+	logger.Info(fmt.Sprintf("age: '%d' | '%d'", cUser.GetAge(), user.GetAge()), journey)
+
+	if cUser.GetName() == user.GetName() && cUser.GetAge() == user.GetAge() {
 		logger.Info("there is no update to do", journey)
 		return nil
 	}
 
-	return us.userRepo.UpdateUser(user, user.GetID())
+	return us.userRepo.UpdateUser(user, uid)
 }
 
 func (us *userDomainService) Login(email, password string) (string, domain.UserDomainInterface, *rest_err.RestErr) {

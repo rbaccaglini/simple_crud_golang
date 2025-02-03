@@ -41,12 +41,11 @@ func (uh *userHandlerInterface) UpdateUser(c *gin.Context) {
 	}
 
 	domain := domain.NewUserUpdateDomain(
-		uid,
 		UserRequest.Name,
 		UserRequest.Age,
 	)
 
-	if err := uh.service.UpdateUser(domain); err != nil {
+	if err := uh.service.UpdateUser(domain, uid); err != nil {
 		logger.Error("calling service", err, journey)
 		c.JSON(err.Code, err)
 		return

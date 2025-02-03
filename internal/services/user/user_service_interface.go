@@ -21,7 +21,7 @@ type UserDomainService interface {
 
 	CreateUser(user domain.UserDomainInterface) (domain.UserDomainInterface, *rest_err.RestErr)
 	DeleteUser(uid string) *rest_err.RestErr
-	UpdateUser(user domain.UserDomainInterface) *rest_err.RestErr
+	UpdateUser(user domain.UserDomainInterface, uid string) *rest_err.RestErr
 
 	Login(email, password string) (string, domain.UserDomainInterface, *rest_err.RestErr)
 }

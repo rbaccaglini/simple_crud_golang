@@ -1,4 +1,4 @@
-package user_repository
+package user_repository_test
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/rbaccaglini/simple_crud_golang/config"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/entity"
+	user_repository "github.com/rbaccaglini/simple_crud_golang/internal/repositories/user"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,10 +31,9 @@ func TestUserRepository_GetUserById(t *testing.T) {
 		mt.AddMockResponses(bson.D{
 			{Key: "ok", Value: 0},
 		})
-
 		databaseMock := mt.Client.Database(databaseName)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 
-		repo := NewUserRepository(databaseMock, config)
 		userDomain, err := repo.GetUserById("test")
 
 		assert.NotNil(t, err)
@@ -49,7 +49,7 @@ func TestUserRepository_GetUserById(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomain, err := repo.GetUserById("test")
 
 		assert.NotNil(t, err)
@@ -74,7 +74,7 @@ func TestUserRepository_GetUserById(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 
 		userDomain, err := repo.GetUserById(uid)
 
@@ -112,7 +112,7 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomain, err := repo.GetUserByEmail(email)
 
 		assert.NotNil(t, err)
@@ -128,7 +128,7 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomain, err := repo.GetUserByEmail(email)
 
 		assert.NotNil(t, err)
@@ -153,7 +153,7 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 
 		userDomain, err := repo.GetUserByEmail(email)
 
@@ -189,7 +189,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomain, err := repo.GetUsers()
 
 		assert.NotNil(t, err)
@@ -205,7 +205,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomains, err := repo.GetUsers()
 
 		assert.Nil(t, err)
@@ -243,7 +243,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomains, err := repo.GetUsers()
 
 		assert.Nil(t, err)
@@ -282,7 +282,7 @@ func TestUserRepository_ValidateCredentials(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomain, err := repo.ValidateCredentials(email, password)
 
 		assert.NotNil(t, err)
@@ -298,7 +298,7 @@ func TestUserRepository_ValidateCredentials(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 		userDomain, err := repo.ValidateCredentials(email, password)
 
 		assert.NotNil(t, err)
@@ -323,7 +323,7 @@ func TestUserRepository_ValidateCredentials(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock, config)
 
 		userDomain, err := repo.ValidateCredentials(email, password)
 
