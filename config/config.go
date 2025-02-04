@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -15,23 +16,24 @@ type Config struct {
 	JWTSecret        string
 }
 
-func LoadConfig() *Config {
+func LoadConfig() (*Config, error) {
 	godotenv.Load("../../config/.env")
 
 	config := &Config{
-		Port:             getEnv("PORT", "8080"),
-		MongoURI:         getEnv("MONGODB_URL", "mongodb://localhost:27017"),
-		DatabaseName:     getEnv("MONGODB_DB", "crud-init"),
-		UserDbCollection: getEnv("MONGODB_USER_DB_COLLECTION", "users"),
-		JWTSecret:        getEnv("JWT_SECRET_KEY", ""),
+		Port:             mustGetEnv("APP_PORT"),
+		MongoURI:         mustGetEnv("MONGODB_URL"),
+		DatabaseName:     mustGetEnv("MONGODB_DB"),
+		UserDbCollection: mustGetEnv("MONGODB_USER_DB_COLLECTION"),
+		JWTSecret:        mustGetEnv("JWT_SECRET_KEY"),
 	}
 
-	return config
+	return config, nil
 }
 
-func getEnv(key, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
+func mustGetEnv(key string) string {
+	value, exists := os.LookupEnv(key)
+	if !exists {
+		log.Fatalf("Erro: A variável de ambiente %s não está definida", key)
 	}
-	return defaultValue
+	return value
 }

@@ -44,7 +44,10 @@ func TestMain(m *testing.M) {
 	}
 
 	Database, closeConnection = connection.OpenConnection()
-	config := config.LoadConfig()
+	config, errCfg := config.LoadConfig()
+	if errCfg != nil {
+		log.Fatalf("Error setting environment variable: %v", errCfg)
+	}
 	repo := user_repository.NewUserRepository(Database, config)
 	userService := user_service.NewUserDomainService(repo)
 	UserHandler = user_handler.NewUserHandlerInterface(userService)
