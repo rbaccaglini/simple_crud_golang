@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/docker"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,6 +22,14 @@ func OpenConnection() (database *mongo.Database, close func()) {
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "mongo",
 		Tag:        "latest",
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			"27017/tcp": {
+				{
+					HostIP:   "0.0.0.0",
+					HostPort: "32801",
+				},
+			},
+		},
 	})
 	if err != nil {
 		log.Fatalf("Could not create mongo container: %s", err)

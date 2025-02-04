@@ -1,4 +1,4 @@
-package tests
+package integration_tests
 
 import (
 	"context"
@@ -12,7 +12,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/request"
+	user_request "github.com/rbaccaglini/simple_crud_golang/internal/models/request/user"
+
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -25,7 +26,7 @@ func TestUpdateUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserUpdateRequest{
+		body := user_request.UserUpdateRequest{
 			Name: "Test Silva",
 			Age:  20,
 		}
@@ -38,7 +39,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "PUT", stringReader)
-		UserController.UpdateUser(ctx)
+		UserHandler.UpdateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusBadRequest, recorder.Code)
@@ -50,7 +51,7 @@ func TestUpdateUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserUpdateRequest{
+		body := user_request.UserUpdateRequest{
 			Name: "Test Silva",
 			Age:  -1,
 		}
@@ -63,7 +64,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "PUT", stringReader)
-		UserController.UpdateUser(ctx)
+		UserHandler.UpdateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusBadRequest, recorder.Code)
@@ -92,7 +93,7 @@ func TestUpdateUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserUpdateRequest{
+		body := user_request.UserUpdateRequest{
 			Name: "Test Silva",
 			Age:  22,
 		}
@@ -105,7 +106,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "PUT", stringReader)
-		UserController.UpdateUser(ctx)
+		UserHandler.UpdateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusNoContent, recorder.Code)
@@ -134,7 +135,7 @@ func TestUpdateUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserUpdateRequest{
+		body := user_request.UserUpdateRequest{
 			Name: "Test Silva",
 			Age:  22,
 		}
@@ -147,7 +148,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "PUT", stringReader)
-		UserController.UpdateUser(ctx)
+		UserHandler.UpdateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusNoContent, recorder.Code)

@@ -23,7 +23,7 @@ func TestUserDomainService_FindAllUser(t *testing.T) {
 
 	mCtr := gomock.NewController(t)
 	s := mocks.NewMockUserDomainService(mCtr)
-	ctr := user_handler.NewUserControllerInterface(s)
+	ctr := user_handler.NewUserHandlerInterface(s)
 
 	t.Run("FindAllUser::empty_response", func(t *testing.T) {
 		r := httptest.NewRecorder()
@@ -99,7 +99,7 @@ func TestUserDomainService_FindUserById(t *testing.T) {
 
 	mCtr := gomock.NewController(t)
 	s := mocks.NewMockUserDomainService(mCtr)
-	ctr := user_handler.NewUserControllerInterface(s)
+	ctr := user_handler.NewUserHandlerInterface(s)
 
 	t.Run("FindUserById::invalid_user_id", func(t *testing.T) {
 		r := httptest.NewRecorder()
@@ -169,7 +169,7 @@ func TestUserDomainService_FindUserByEmail(t *testing.T) {
 
 	mCtr := gomock.NewController(t)
 	s := mocks.NewMockUserDomainService(mCtr)
-	ctr := user_handler.NewUserControllerInterface(s)
+	ctr := user_handler.NewUserHandlerInterface(s)
 
 	t.Run("FindUserByEmail::invalid_user_email", func(t *testing.T) {
 		r := httptest.NewRecorder()

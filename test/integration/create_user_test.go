@@ -1,4 +1,4 @@
-package tests
+package integration_tests
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/request"
+	user_request "github.com/rbaccaglini/simple_crud_golang/internal/models/request/user"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -24,7 +24,7 @@ func TestCreateUser(t *testing.T) {
 		r := httptest.NewRecorder()
 		ctx := GetTestGinContext(r)
 
-		userRequest := request.UserRequest{
+		userRequest := user_request.UserRequest{
 			Email:    "email_not_valid",
 			Password: "123$%¨7",
 			Name:     "Test User",
@@ -35,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "POST", stringReader)
 
 		// Act
-		UserController.CreateUser(ctx)
+		UserHandler.CreateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusBadRequest, r.Code)
@@ -58,7 +58,7 @@ func TestCreateUser(t *testing.T) {
 		r := httptest.NewRecorder()
 		ctx := GetTestGinContext(r)
 
-		userRequest := request.UserRequest{
+		userRequest := user_request.UserRequest{
 			Email:    "test@test.com",
 			Password: "123$%¨7",
 			Name:     "Test User",
@@ -69,11 +69,11 @@ func TestCreateUser(t *testing.T) {
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "POST", stringReader)
 
 		// Act
-		UserController.CreateUser(ctx)
+		UserHandler.CreateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusBadRequest, r.Code)
-		assert.Contains(t, r.Body.String(), "Email is already registered")
+		assert.Contains(t, r.Body.String(), "email is already registered")
 	})
 
 	t.Run("user_create_success", func(t *testing.T) {
@@ -90,7 +90,7 @@ func TestCreateUser(t *testing.T) {
 		r := httptest.NewRecorder()
 		ctx := GetTestGinContext(r)
 
-		userRequest := request.UserRequest{
+		userRequest := user_request.UserRequest{
 			Email:    "test@test.com",
 			Password: "123$%¨7",
 			Name:     "Test User",
@@ -101,7 +101,7 @@ func TestCreateUser(t *testing.T) {
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "POST", stringReader)
 
 		// Act
-		UserController.CreateUser(ctx)
+		UserHandler.CreateUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusCreated, r.Code)

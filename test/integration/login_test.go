@@ -1,4 +1,4 @@
-package tests
+package integration_tests
 
 import (
 	"context"
@@ -13,8 +13,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/request"
-	"github.com/rbaccaglini/simple_crud_golang/src/model"
+	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
+	user_request "github.com/rbaccaglini/simple_crud_golang/internal/models/request/user"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,7 +27,7 @@ func TestLoginUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserLoginRequest{
+		body := user_request.LoginRequest{
 			Email:    "email_not_valid",
 			Password: "123$%¨7",
 		}
@@ -36,11 +36,11 @@ func TestLoginUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "POST", stringReader)
-		UserController.Login(ctx)
+		UserHandler.Login(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusBadRequest, recorder.Code)
-		assert.Contains(t, recorder.Body.String(), "Email must be a valid email address")
+		assert.Contains(t, recorder.Body.String(), "Field validation for 'Email' failed on the 'email'")
 	})
 
 	t.Run("user not exists", func(t *testing.T) {
@@ -57,7 +57,7 @@ func TestLoginUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserLoginRequest{
+		body := user_request.LoginRequest{
 			Email:    "test@test.com",
 			Password: "123$%¨7",
 		}
@@ -66,11 +66,11 @@ func TestLoginUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "POST", stringReader)
-		UserController.Login(ctx)
+		UserHandler.Login(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusForbidden, recorder.Code)
-		assert.Contains(t, recorder.Body.String(), "Invalid credentials")
+		assert.Contains(t, recorder.Body.String(), "invalid credentials")
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -80,7 +80,7 @@ func TestLoginUser(t *testing.T) {
 		id := primitive.NewObjectID()
 
 		// Preparing Database Records
-		d := model.NewUserDomain(email, password, "Test Silva", 20)
+		d := domain.NewUserDomain(email, password, "Test Silva", 20)
 		d.EncryptPassword()
 		ePass := d.GetPassword()
 
@@ -105,7 +105,7 @@ func TestLoginUser(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 
-		body := request.UserLoginRequest{
+		body := user_request.LoginRequest{
 			Email:    email,
 			Password: password,
 		}
@@ -114,7 +114,7 @@ func TestLoginUser(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "POST", stringReader)
-		UserController.Login(ctx)
+		UserHandler.Login(ctx)
 
 		log.Printf("Token: %s", recorder.Header().Get("Authorization"))
 

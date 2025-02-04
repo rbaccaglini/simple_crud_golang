@@ -1,4 +1,4 @@
-package tests
+package integration_tests
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func TestDeleteUser(t *testing.T) {
 		MakeRequest(ctx, p, url.Values{}, "DELETE", nil)
 
 		// Act
-		UserController.DeleteUser(ctx)
+		UserHandler.DeleteUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusBadRequest, r.Code)
@@ -56,7 +56,7 @@ func TestDeleteUser(t *testing.T) {
 		MakeRequest(ctx, p, url.Values{}, "DELETE", nil)
 
 		// Act
-		UserController.DeleteUser(ctx)
+		UserHandler.DeleteUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusNoContent, r.Code)
@@ -83,7 +83,7 @@ func TestDeleteUser(t *testing.T) {
 		MakeRequest(ctx, p, url.Values{}, "DELETE", nil)
 
 		// Act
-		UserController.DeleteUser(ctx)
+		UserHandler.DeleteUser(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusNoContent, r.Code)

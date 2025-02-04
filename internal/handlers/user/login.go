@@ -18,14 +18,14 @@ func (uh *userHandlerInterface) Login(c *gin.Context) {
 	mLogin := &user_request.LoginRequest{}
 	if err := c.ShouldBindJSON(mLogin); err != nil {
 		logger.Error("some fields with error", err, journey)
-		c.JSON(http.StatusBadRequest, rest_err.NewBadRequestError("Invalid json body"))
+		c.JSON(http.StatusBadRequest, rest_err.NewBadRequestError(err.Error()))
 		return
 	}
 
 	t, ud, err := uh.service.Login(mLogin.Email, mLogin.Password)
 	if err != nil {
 		logger.Error("error on create token", err, journey)
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(err.Code, err)
 		return
 	}
 

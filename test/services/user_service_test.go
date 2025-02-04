@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func TestUserService(t *testing.T) {
+func TestFindUserService(t *testing.T) {
 
 	ctlr := gomock.NewController(t)
 	defer ctlr.Finish()
@@ -111,6 +111,15 @@ func TestUserService(t *testing.T) {
 		assert.NotNil(t, ud)
 		assert.Equal(t, resp.GetEmail(), ud.GetEmail())
 	})
+}
+
+func TestCreateUserService(t *testing.T) {
+
+	ctlr := gomock.NewController(t)
+	defer ctlr.Finish()
+
+	r := mocks.NewMockUserRepository(ctlr)
+	srv := user_service.NewUserDomainService(r)
 
 	t.Run("CreateUser::email_already_registered_1", func(t *testing.T) {
 		r.EXPECT().GetUserByEmail(gomock.Any()).
@@ -185,7 +194,15 @@ func TestUserService(t *testing.T) {
 		assert.NotNil(t, ud)
 		assert.Equal(t, uid, ud.GetID())
 	})
+}
 
+func TestDeleteUserService(t *testing.T) {
+
+	ctlr := gomock.NewController(t)
+	defer ctlr.Finish()
+
+	r := mocks.NewMockUserRepository(ctlr)
+	srv := user_service.NewUserDomainService(r)
 	t.Run("DeleteUser::repository_error", func(t *testing.T) {
 		r.EXPECT().DeleteUser("123").Return(rest_err.NewInternalServerError("error"))
 		err := srv.DeleteUser("123")
@@ -196,6 +213,15 @@ func TestUserService(t *testing.T) {
 		err := srv.DeleteUser("123")
 		assert.Nil(t, err)
 	})
+}
+
+func TestUpdateUserService(t *testing.T) {
+
+	ctlr := gomock.NewController(t)
+	defer ctlr.Finish()
+
+	r := mocks.NewMockUserRepository(ctlr)
+	srv := user_service.NewUserDomainService(r)
 
 	t.Run("UpdateUser::user_not_found", func(t *testing.T) {
 		r.EXPECT().GetUserById(gomock.Any()).Return(nil, rest_err.NewNotFoundError("user not found"))
@@ -255,7 +281,14 @@ func TestUserService(t *testing.T) {
 
 		assert.Nil(t, err)
 	})
+}
 
+func TestLoginUserService(t *testing.T) {
+	ctlr := gomock.NewController(t)
+	defer ctlr.Finish()
+
+	r := mocks.NewMockUserRepository(ctlr)
+	srv := user_service.NewUserDomainService(r)
 	t.Run("Login::invalid_credentials", func(t *testing.T) {
 		r.EXPECT().ValidateCredentials(gomock.Any(), gomock.Any()).
 			Return(nil, rest_err.NewNotFoundError("user not found"))

@@ -1,4 +1,4 @@
-package tests
+package integration_tests
 
 import (
 	"context"
@@ -10,15 +10,15 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller/model/response"
+	user_response "github.com/rbaccaglini/simple_crud_golang/internal/models/response/user"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func TestFindUserByEmail(t *testing.T) {
+func TestIntegrationFindUserByEmail(t *testing.T) {
 
-	t.Run("user_not_found_with_this__email", func(t *testing.T) {
+	t.Run("user_not_found_with_this_email", func(t *testing.T) {
 		// Preparing Database Records
 		err := Database.
 			Collection(os.Getenv("MONGODB_USER_DB_COLLECTION")).
@@ -41,19 +41,19 @@ func TestFindUserByEmail(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "GET", nil)
-		UserController.FindUserByEmail(ctx)
+		UserHandler.FindUserByEmail(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusNotFound, recorder.Code)
 	})
 
-	t.Run("user__found_with_specified_email", func(t *testing.T) {
+	t.Run("user_found_with_specified_email", func(t *testing.T) {
 		// Arrange
 		recorder := httptest.NewRecorder()
 		ctx := GetTestGinContext(recorder)
 		param := []gin.Param{
 			{
-				Key:   "userEmail",
+				Key:   "email",
 				Value: "test@test.com",
 			},
 		}
@@ -69,7 +69,7 @@ func TestFindUserByEmail(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "GET", nil)
-		UserController.FindUserByEmail(ctx)
+		UserHandler.FindUserByEmail(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusOK, recorder.Code)
@@ -93,7 +93,7 @@ func TestFindUserById(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, param, url.Values{}, "GET", nil)
-		UserController.FindUserById(ctx)
+		UserHandler.FindUserById(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusNotFound, recorder.Code)
@@ -122,7 +122,7 @@ func TestFindUserById(t *testing.T) {
 		}
 
 		// Act
-		UserController.FindUserById(ctx)
+		UserHandler.FindUserById(ctx)
 
 		// Assert
 		assert.EqualValues(t, http.StatusOK, recorder.Code)
@@ -145,9 +145,9 @@ func TestFindAllUsers(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "GET", nil)
-		UserController.FindAllUsers(ctx)
+		UserHandler.FindAllUser(ctx)
 
-		ur := []response.UserResponse{}
+		ur := []user_response.UserResponse{}
 		b := r.Body.String()
 		err := json.Unmarshal([]byte(b), &ur)
 		if err != nil {
@@ -190,9 +190,9 @@ func TestFindAllUsers(t *testing.T) {
 
 		// Act
 		MakeRequest(ctx, []gin.Param{}, url.Values{}, "GET", nil)
-		UserController.FindAllUsers(ctx)
+		UserHandler.FindAllUser(ctx)
 
-		ur := []response.UserResponse{}
+		ur := []user_response.UserResponse{}
 		b := r.Body.Bytes()
 		err = json.Unmarshal(b, &ur)
 		if err != nil {

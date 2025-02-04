@@ -1,6 +1,7 @@
-package tests
+package integration_tests
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,21 +12,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/rbaccaglini/simple_crud_golang/src/configuration/rest_err"
-	"github.com/rbaccaglini/simple_crud_golang/src/controller"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/repository"
-	"github.com/rbaccaglini/simple_crud_golang/src/model/service"
-	"github.com/rbaccaglini/simple_crud_golang/src/test/connection"
+	"github.com/rbaccaglini/simple_crud_golang/config"
+	user_handler "github.com/rbaccaglini/simple_crud_golang/internal/handlers/user"
+	user_repository "github.com/rbaccaglini/simple_crud_golang/internal/repositories/user"
+	user_service "github.com/rbaccaglini/simple_crud_golang/internal/services/user"
+	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
+	"github.com/rbaccaglini/simple_crud_golang/test/integration/connection"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var (
-	UserController  controller.UserControllerInterface
+	UserHandler     user_handler.UserHandlerInterface
 	Database        *mongo.Database
 	closeConnection func()
 )
 
 func TestMain(m *testing.M) {
+
+	fmt.Println("Setting up environment variables and Docker connection")
+
 	if err := os.Setenv("MONGODB_USER_DB", "test_users"); err != nil {
 		log.Fatalf("Error setting environment variable: %v", err)
 	}
@@ -39,10 +44,10 @@ func TestMain(m *testing.M) {
 	}
 
 	Database, closeConnection = connection.OpenConnection()
-
-	repo := repository.NewUserRepository(Database)
-	userService := service.NewUserDomainService(repo)
-	UserController = controller.NewUserControllerInterface(userService)
+	config := config.LoadConfig()
+	repo := user_repository.NewUserRepository(Database, config)
+	userService := user_service.NewUserDomainService(repo)
+	UserHandler = user_handler.NewUserHandlerInterface(userService)
 
 	code := m.Run()
 

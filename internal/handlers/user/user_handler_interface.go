@@ -5,7 +5,7 @@ import (
 	user_service "github.com/rbaccaglini/simple_crud_golang/internal/services/user"
 )
 
-func NewUserControllerInterface(si user_service.UserDomainService) UserHandlerInterface {
+func NewUserHandlerInterface(si user_service.UserDomainService) UserHandlerInterface {
 	return &userHandlerInterface{
 		service: si,
 	}

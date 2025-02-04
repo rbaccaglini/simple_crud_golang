@@ -43,5 +43,5 @@ func initDependencies(
 ) user_handler.UserHandlerInterface {
 	repo := user_repository.NewUserRepository(database, config)
 	service := user_service.NewUserDomainService(repo)
-	return user_handler.NewUserControllerInterface(service)
+	return user_handler.NewUserHandlerInterface(service)
 }
