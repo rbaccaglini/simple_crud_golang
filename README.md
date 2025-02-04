@@ -27,6 +27,19 @@ go mod tidy
 ```bash
 docker run --name mongodb -d -p 27017:27017 mongo
 ```
+### Example of user registration in DB:
+```json
+{
+    "_id": {
+        "$oid": "67a260ca7847df2a9696aa3a"
+    },
+    "password": "54df418471fded5c07f2d338241ba202",
+    "email": "test@test.com",
+    "name": "Roger",
+    "age": 47
+}
+```
+
 ### Mockgen
 - installing mockgen
 ```bash
@@ -35,17 +48,17 @@ go install go.uber.org/mock/mockgen@latest
 
 - creating user repository mock
 ```bash
-mockgen -source=src/model/repository/user_repository.go -destination=src/test/mocks/user_repository_mock.go -package=mocks
+mockgen -source=internal/repositories/user/user_repository_interface.go -destination=test/mocks/user_repository_interface_mock.go -package=mocks
 ```
 
-- creating user domain mock
+- creating user service mock
 ```bash
-mockgen -source=src/model/user_domain_interface.go -destination=src/test/mocks/user_domain_interface_mock.go -package=mocks
+mockgen -source=internal/services/user/user_service_interface.go -destination=test/mocks/user_service_interface_mock.go -package=mocks
 ```
 
-- creating user domain service mock
+- creating user handler mock
 ```bash
-mockgen -source=src/model/service/user_interface.go -destination=src/test/mocks/user_interface_mock.go -package=mocks
+mockgen -source=internal/handlers/user/user_handler_interface.go -destination=test/mocks/user_handler_interface_mock.go -package=mocks
 ```
 
 ### Uteis

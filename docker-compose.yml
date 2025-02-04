@@ -5,10 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - MONGODB_URL={mongodb-url}
-      - MONGODB_DB={mongodb-db}
-      - MONGODB_USER_DB_COLLECTION={mongodb-user-db-collection}
-      - JWT_SECRET_KEY={jwt-secret-key}
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DB=crud-init
+      - MONGODB_USER_DB_COLLECTION=users
+      - JWT_SECRET_KEY=123$567*901@34%67*90!23$09*76%4#
     ports:
       - "8080:8080"
     depends_on:
@@ -17,9 +17,14 @@ services:
       - meu_crud_network
 
   mongodb:
-    image: mongo
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
     ports:
-      - "27017:27017"
+      - "27019:27017"
+    volumes:
+      - ./db:/data/db:rw
     networks:
       - meu_crud_network
 
