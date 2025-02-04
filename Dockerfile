@@ -5,7 +5,12 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
+COPY cmd cmd
+COPY config config
+COPY docs docs
+COPY internal internal
+COPY pkg pkg
+COPY test test
 
 WORKDIR /app/cmd/simple_crud_golang
 

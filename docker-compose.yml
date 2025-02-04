@@ -5,8 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - APP_PORT=8080
-      - MONGODB_URL=mongodb://localhost:27017
+      - MONGODB_URL=mongodb://mongodb:27017
       - MONGODB_DB=crud-init
       - MONGODB_USER_DB_COLLECTION=users
       - JWT_SECRET_KEY=123$567*901@34%67*90!23$09*76%4#
@@ -18,9 +17,14 @@ services:
       - meu_crud_network
 
   mongodb:
-    image: mongo
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
     ports:
-      - "27017:27017"
+      - "27019:27017"
+    volumes:
+      - ./db:/data/db:rw
     networks:
       - meu_crud_network
 
