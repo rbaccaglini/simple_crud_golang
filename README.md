@@ -27,6 +27,19 @@ go mod tidy
 ```bash
 docker run --name mongodb -d -p 27017:27017 mongo
 ```
+### Example of user registration in DB:
+```json
+{
+    "_id": {
+        "$oid": "67a260ca7847df2a9696aa3a"
+    },
+    "password": "54df418471fded5c07f2d338241ba202",
+    "email": "test@test.com",
+    "name": "Roger",
+    "age": 47
+}
+```
+
 ### Mockgen
 - installing mockgen
 ```bash
