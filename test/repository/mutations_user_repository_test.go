@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rbaccaglini/simple_crud_golang/config"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
 	user_repository "github.com/rbaccaglini/simple_crud_golang/internal/repositories/user"
 	"github.com/stretchr/testify/assert"
@@ -15,13 +14,6 @@ import (
 
 func TestUserRepository_InsertUser(t *testing.T) {
 	databaseName := "user_database_test"
-	config := &config.Config{
-		Port:             "8080",
-		MongoURI:         "mongodb://localhost:27017",
-		DatabaseName:     "crud-init",
-		UserDbCollection: "users",
-		JWTSecret:        "123456",
-	}
 
 	mtestDb := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
@@ -34,7 +26,7 @@ func TestUserRepository_InsertUser(t *testing.T) {
 		)
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		domain := domain.NewUserDomain(
 			"test@test.com", "test", "test", 90)
 		userDomain, err := repo.InsertUser(domain)
@@ -56,7 +48,7 @@ func TestUserRepository_InsertUser(t *testing.T) {
 		})
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		domain := domain.NewUserDomain(
 			"test@test.com", "test", "test", 90)
 		userDomain, err := repo.InsertUser(domain)
@@ -69,14 +61,6 @@ func TestUserRepository_InsertUser(t *testing.T) {
 
 func TestUserRepository_DeleteUser(t *testing.T) {
 	databaseName := "user_database_test"
-	config := &config.Config{
-		Port:             "8080",
-		MongoURI:         "mongodb://localhost:27017",
-		DatabaseName:     "crud-init",
-		UserDbCollection: "users",
-		JWTSecret:        "123456",
-	}
-
 	uid := primitive.NewObjectID().Hex()
 
 	mtestDb := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
@@ -90,7 +74,7 @@ func TestUserRepository_DeleteUser(t *testing.T) {
 		)
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		err := repo.DeleteUser(uid)
 
 		assert.Nil(t, err)
@@ -98,7 +82,7 @@ func TestUserRepository_DeleteUser(t *testing.T) {
 
 	mtestDb.Run("DeleteUser::invalid_user_id", func(mt *mtest.T) {
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		err := repo.DeleteUser("invalid_id")
 
 		assert.NotNil(t, err)
@@ -112,7 +96,7 @@ func TestUserRepository_DeleteUser(t *testing.T) {
 		})
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		err := repo.DeleteUser(uid)
 
 		assert.NotNil(t, err)
@@ -122,20 +106,13 @@ func TestUserRepository_DeleteUser(t *testing.T) {
 
 func TestUserRepository_UpdateUser(t *testing.T) {
 	databaseName := "user_database_test"
-	config := &config.Config{
-		Port:             "8080",
-		MongoURI:         "mongodb://localhost:27017",
-		DatabaseName:     "crud-init",
-		UserDbCollection: "users",
-		JWTSecret:        "123456",
-	}
 
 	uid := primitive.NilObjectID.Hex()
 
 	mtestDb := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	mtestDb.Run("UpdateUser::invalid_user_id", func(mt *mtest.T) {
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		ud := domain.NewLoginDomain("test@test.com", "test123")
 
@@ -152,7 +129,7 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 		})
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		ud := domain.NewUserUpdateDomain("User Name", 20)
 
@@ -172,7 +149,7 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 		)
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		ud := domain.NewUserUpdateDomain("User Name", 20)
 

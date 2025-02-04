@@ -13,7 +13,6 @@ require (
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/stretchr/testify v1.10.0
 	go.mongodb.org/mongo-driver v1.17.2
-	go.uber.org/mock v0.5.0
 	go.uber.org/zap v1.27.0
 )
 

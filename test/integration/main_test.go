@@ -12,7 +12,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/rbaccaglini/simple_crud_golang/config"
 	user_handler "github.com/rbaccaglini/simple_crud_golang/internal/handlers/user"
 	user_repository "github.com/rbaccaglini/simple_crud_golang/internal/repositories/user"
 	user_service "github.com/rbaccaglini/simple_crud_golang/internal/services/user"
@@ -44,11 +43,7 @@ func TestMain(m *testing.M) {
 	}
 
 	Database, closeConnection = connection.OpenConnection()
-	config, errCfg := config.LoadConfig()
-	if errCfg != nil {
-		log.Fatalf("Error setting environment variable: %v", errCfg)
-	}
-	repo := user_repository.NewUserRepository(Database, config)
+	repo := user_repository.NewUserRepository(Database)
 	userService := user_service.NewUserDomainService(repo)
 	UserHandler = user_handler.NewUserHandlerInterface(userService)
 

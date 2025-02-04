@@ -1,22 +1,21 @@
 package user_repository
 
 import (
-	"github.com/rbaccaglini/simple_crud_golang/config"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewUserRepository(database *mongo.Database, config *config.Config) UserRepository {
-	return &userRepository{
-		database,
-		config,
-	}
+const (
+	MONGODB_USER_DB_COLLECTION = "MONGODB_USER_DB_COLLECTION"
+)
+
+func NewUserRepository(database *mongo.Database) UserRepository {
+	return &userRepository{database}
 }
 
 type userRepository struct {
 	databaseConnection *mongo.Database
-	config             *config.Config
 }
 
 type UserRepository interface {

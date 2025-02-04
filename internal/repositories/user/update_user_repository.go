@@ -3,6 +3,7 @@ package user_repository
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
 	"github.com/rbaccaglini/simple_crud_golang/internal/util/converter"
@@ -17,7 +18,7 @@ func (ur *userRepository) UpdateUser(user domain.UserDomainInterface, uid string
 	journey := zap.String("journey", "UpdateUserRepository")
 	logger.Info("Init update user repository", journey)
 
-	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 
 	value := converter.ConverterDomainToEntity(user)
 	userId, errId := primitive.ObjectIDFromHex(uid)

@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rbaccaglini/simple_crud_golang/config"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/entity"
 	user_repository "github.com/rbaccaglini/simple_crud_golang/internal/repositories/user"
 	"github.com/stretchr/testify/assert"
@@ -14,9 +13,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
+type Config struct {
+	Port             string
+	MongoURI         string
+	DatabaseName     string
+	UserDbCollection string
+	JWTSecret        string
+}
+
 func TestUserRepository_GetUserById(t *testing.T) {
 	databaseName := "user_database_test"
-	config := &config.Config{
+	config := &Config{
 		Port:             "8080",
 		MongoURI:         "mongodb://localhost:27017",
 		DatabaseName:     "crud-init",
@@ -32,7 +39,7 @@ func TestUserRepository_GetUserById(t *testing.T) {
 			{Key: "ok", Value: 0},
 		})
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		userDomain, err := repo.GetUserById("test")
 
@@ -49,7 +56,7 @@ func TestUserRepository_GetUserById(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomain, err := repo.GetUserById("test")
 
 		assert.NotNil(t, err)
@@ -74,7 +81,7 @@ func TestUserRepository_GetUserById(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		userDomain, err := repo.GetUserById(uid)
 
@@ -86,13 +93,6 @@ func TestUserRepository_GetUserById(t *testing.T) {
 func TestUserRepository_GetUserByEmail(t *testing.T) {
 	databaseName := "user_database_test"
 	collectionName := "user_collection_test"
-	config := &config.Config{
-		Port:             "8080",
-		MongoURI:         "mongodb://localhost:27017",
-		DatabaseName:     "crud-init",
-		UserDbCollection: "users",
-		JWTSecret:        "123456",
-	}
 
 	email := "test@test.com"
 
@@ -112,7 +112,7 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomain, err := repo.GetUserByEmail(email)
 
 		assert.NotNil(t, err)
@@ -128,7 +128,7 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomain, err := repo.GetUserByEmail(email)
 
 		assert.NotNil(t, err)
@@ -153,7 +153,7 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		userDomain, err := repo.GetUserByEmail(email)
 
@@ -165,13 +165,6 @@ func TestUserRepository_GetUserByEmail(t *testing.T) {
 func TestUserRepository_GetUsers(t *testing.T) {
 	databaseName := "user_database_test"
 	collectionName := "user_collection_test"
-	config := &config.Config{
-		Port:             "8080",
-		MongoURI:         "mongodb://localhost:27017",
-		DatabaseName:     "crud-init",
-		UserDbCollection: "users",
-		JWTSecret:        "123456",
-	}
 
 	err := os.Setenv("MONGODB_USER_DB", collectionName)
 	if err != nil {
@@ -189,7 +182,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomain, err := repo.GetUsers()
 
 		assert.NotNil(t, err)
@@ -205,7 +198,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomains, err := repo.GetUsers()
 
 		assert.Nil(t, err)
@@ -243,7 +236,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomains, err := repo.GetUsers()
 
 		assert.Nil(t, err)
@@ -255,13 +248,6 @@ func TestUserRepository_GetUsers(t *testing.T) {
 func TestUserRepository_ValidateCredentials(t *testing.T) {
 	databaseName := "user_database_test"
 	collectionName := "user_collection_test"
-	config := &config.Config{
-		Port:             "8080",
-		MongoURI:         "mongodb://localhost:27017",
-		DatabaseName:     "crud-init",
-		UserDbCollection: "users",
-		JWTSecret:        "123456",
-	}
 
 	email := "test@test.com"
 	password := "test123$"
@@ -282,7 +268,7 @@ func TestUserRepository_ValidateCredentials(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomain, err := repo.ValidateCredentials(email, password)
 
 		assert.NotNil(t, err)
@@ -298,7 +284,7 @@ func TestUserRepository_ValidateCredentials(t *testing.T) {
 
 		databaseMock := mt.Client.Database(databaseName)
 
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 		userDomain, err := repo.ValidateCredentials(email, password)
 
 		assert.NotNil(t, err)
@@ -323,7 +309,7 @@ func TestUserRepository_ValidateCredentials(t *testing.T) {
 		))
 
 		databaseMock := mt.Client.Database(databaseName)
-		repo := user_repository.NewUserRepository(databaseMock, config)
+		repo := user_repository.NewUserRepository(databaseMock)
 
 		userDomain, err := repo.ValidateCredentials(email, password)
 

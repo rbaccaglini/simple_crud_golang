@@ -1,17 +1,19 @@
 FROM amd64/golang:1.23 AS BUILDER
 
 WORKDIR /app
-COPY src src
-COPY docs docs
-COPY go.mod go.mod
-COPY go.sum go.sum
-COPY init_dependencies.go init_dependencies.go
-COPY main.go main.go
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on \
- GOOS=linux go build -o meuprimeirocrudgo .
+COPY go.mod go.sum ./
+RUN go mod download
 
-FROM golang:1.23-alpine as RUNNER
+COPY . .
+
+WORKDIR /app/cmd/simple_crud_golang
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/meuprimeirocrudgo .
+
+FROM golang:1.23-alpine AS RUNNER
+
+WORKDIR /root/
 
 COPY --from=BUILDER /app/meuprimeirocrudgo .
 

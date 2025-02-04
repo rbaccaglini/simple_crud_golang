@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/domain"
 	"github.com/rbaccaglini/simple_crud_golang/internal/models/entity"
@@ -21,7 +22,7 @@ func (ur *userRepository) GetUsers() ([]domain.UserDomainInterface, *rest_err.Re
 	logger.Info("Init Find All Users repository", journey)
 
 	filter := bson.D{}
-	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 	cur, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		errMessage := "Error trying to get all users"
@@ -74,7 +75,7 @@ func (ur *userRepository) findBy(filter bson.D) (domain.UserDomainInterface, *re
 	userEntity := &entity.UserEntity{}
 	filterStg := filterAjustment(&filter)
 
-	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 
 	err := collection.FindOne(context.Background(), filter).Decode(userEntity)
 	if err != nil {

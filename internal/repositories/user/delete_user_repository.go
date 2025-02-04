@@ -3,6 +3,7 @@ package user_repository
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/logger"
 	"github.com/rbaccaglini/simple_crud_golang/pkg/utils/rest_err"
@@ -22,7 +23,7 @@ func (ur *userRepository) DeleteUser(uid string) *rest_err.RestErr {
 	}
 	filter := bson.D{{Key: "_id", Value: puid}}
 
-	collection := ur.databaseConnection.Collection(ur.config.UserDbCollection)
+	collection := ur.databaseConnection.Collection(os.Getenv(MONGODB_USER_DB_COLLECTION))
 	if _, errDel := collection.DeleteOne(context.Background(), filter); errDel != nil {
 		logger.Error("error on delete user", errDel, journey)
 		return rest_err.NewInternalServerError(fmt.Sprintf("error on delete user: %s", errDel.Error()))
