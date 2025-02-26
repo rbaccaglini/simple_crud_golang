@@ -11,11 +11,11 @@ import (
 func InitRouter(r *gin.RouterGroup, handler user_handler.UserHandlerInterface) {
 
 	r.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true, // Permite qualquer origem
+		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: false, // Desative credenciais para maior segurança
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		AllowCredentials: false,
 		MaxAge:           12 * time.Hour,
 	}))
 
